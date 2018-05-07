@@ -97,6 +97,16 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
+msr::airlib::VehicleApiBase* VehiclePawnWrapper::getApi() const
+{
+    return api_.get();
+}
+
+void VehiclePawnWrapper::setApi(std::unique_ptr<msr::airlib::VehicleApiBase> api)
+{
+    api_ = std::move(api);
+}
+
 void VehiclePawnWrapper::getRawVehicleSettings(msr::airlib::Settings& settings) const
 {
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -207,12 +217,15 @@ int VehiclePawnWrapper::getCameraCount()
 void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
+    pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+//void playBack()
+//{
     //if (pawn_->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {
     //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
     //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(true);
     //}
-    pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
-
     //TODO: refactor below code used for playback
     //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
     //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
@@ -223,7 +236,7 @@ void VehiclePawnWrapper::reset()
     //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
     //std::ifstream real_log("C:\\temp\\mavlogs\\square\\real_cmd_012_square 5 1.txt.pos.txt");
     //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
-}
+//}
 
 const VehiclePawnWrapper::GeoPoint& VehiclePawnWrapper::getHomePoint() const
 {

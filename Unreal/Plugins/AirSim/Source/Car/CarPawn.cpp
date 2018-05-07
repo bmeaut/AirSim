@@ -1,17 +1,19 @@
 #include "CarPawn.h"
-#include "CarWheelFront.h"
-#include "CarWheelRear.h"
-#include "common/common_utils/Utils.hpp"
+#include "Engine/SkeletalMesh.h"
+#include "GameFramework/Controller.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "WheeledVehicleMovementComponent4W.h"
-#include "Engine/SkeletalMesh.h"
-#include "GameFramework/Controller.h"
+
+#include "CarWheelFront.h"
+#include "CarWheelRear.h"
 #include "AirBlueprintLib.h"
-#include "common/ClockFactory.hpp"
 #include "PIPCamera.h"
 #include <vector>
+#include "common/common_utils/Utils.hpp"
+#include "common/ClockFactory.hpp"
+
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -166,7 +168,7 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound)
+void ACarPawn::initializeForBeginPlay(bool engine_sound)
 {
     if (engine_sound)
         EngineSoundComponent->Activate();
@@ -195,8 +197,8 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
     wrapper_->initialize(this, cameras);
     wrapper_->setKinematics(&kinematics_);
-
-    startApiServer(enable_rpc, api_server_address);
+    wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
+        new CarPawnApi(wrapper_.get(), this->GetVehicleMovement())));
 
     //TODO: should do reset() here?
     keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
@@ -208,59 +210,19 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
             UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid == "" ?
                 "(Detected)" : joystick_state_.pid_vid, LogDebugLevel::Informational);
         else
-            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
+            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ",
                 std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
     }
 
 }
 
-void ACarPawn::reset(bool disable_api_control)
+msr::airlib::CarApiBase* ACarPawn::getApi() const
 {
-    keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
-    api_->reset();
-
-    if (disable_api_control)
-        api_->enableApiControl(false);
-}
-
-void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
-{
-    if (enable_rpc) {
-        api_.reset(new CarPawnApi(getVehiclePawnWrapper(), this->GetVehicleMovement()));
-
-
-#ifdef AIRLIB_NO_RPC
-        rpclib_server_.reset(new msr::airlib::DebugApiServer());
-#else
-        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(api_.get(), api_server_address));
-#endif
-
-        rpclib_server_->start();
-        UAirBlueprintLib::LogMessageString("API server started at ",
-            api_server_address == "" ? "(default)" : api_server_address.c_str(), LogDebugLevel::Informational);
-    }
-    else
-        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
-
-}
-void ACarPawn::stopApiServer()
-{
-    if (rpclib_server_ != nullptr) {
-        rpclib_server_->stop();
-        rpclib_server_.reset(nullptr);
-        api_.reset(nullptr);
-    }
-}
-
-bool ACarPawn::isApiServerStarted()
-{
-    return rpclib_server_ != nullptr;
+    return static_cast<msr::airlib::CarApiBase*>(wrapper_->getApi());
 }
 
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    stopApiServer();
-
     if (InternalCamera1)
         InternalCamera1->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     InternalCamera1 = nullptr;
@@ -384,8 +346,6 @@ void ACarPawn::Tick(float Delta)
 
     updateCarControls();
 
-    updateForceFeedback();
-
     updateKinematics(Delta);
 
     // update phsyics material
@@ -409,10 +369,11 @@ void ACarPawn::updateCarControls()
     if (wrapper_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
         joystick_.getJoyStickState(0, joystick_state_);
 
-        if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
-            reset();
-            return;
-        }
+        //TODO: move this to SimModeBase
+        //if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
+        //    reset();
+        //    return;
+        //}
 
         std::string vendorid = joystick_state_.pid_vid.substr(0, joystick_state_.pid_vid.find('&'));
 
@@ -421,6 +382,8 @@ void ACarPawn::updateCarControls()
             joystick_controls_.steering = joystick_state_.left_x;
             joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
             joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
+
+            updateForceFeedback();
         }
         // Anything else, typically Logitech G920 wheel
         else {
@@ -451,13 +414,13 @@ void ACarPawn::updateCarControls()
     }
 
     //if API-client control is not active then we route keyboard/jostick control to car
-    if (!api_->isApiControlEnabled()) {
+    if (!getApi()->isApiControlEnabled()) {
         //all car controls from anywhere must be routed through API component
-        api_->setCarControls(current_controls_);
+        getApi()->setCarControls(current_controls_);
     }
     else {
         UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
-        current_controls_ = api_->getCarControls();
+        current_controls_ = getApi()->getCarControls();
     }
     UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);
@@ -478,9 +441,9 @@ void ACarPawn::updateForceFeedback() {
         // Update autocenter
         double speed = GetVehicleMovement()->GetForwardSpeed();
 
-         joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
-             (   1.0 - 1.0 / ( std::abs(speed / 120) + 1.0)) 
-             * (joystick_state_.left_x / 3));
+        joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
+            (1.0 - 1.0 / (std::abs(speed / 120) + 1.0))
+            * (joystick_state_.left_x / 3));
     }
 }
 

@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include "vehicles/car/api/CarApiBase.hpp"
 #include "VehiclePawnWrapper.h"
 #include "WheeledVehicleMovementComponent4W.h"
 #include "physics/Kinematics.hpp"
+#include "common/ImageCaptureBase.hpp"
 
 
 class CarPawnApi : public msr::airlib::CarApiBase {
@@ -42,6 +42,7 @@ public:
 
     virtual void enableApiControl(bool is_enabled) override;
     virtual bool isApiControlEnabled() const override;
+    virtual bool armDisarm(bool arm) override;
 
     virtual const CarApiBase::CarControls& getCarControls() const override;
 

@@ -1,13 +1,30 @@
 #include "SimModeWorldMultiRotor.h"
 #include "ConstructorHelpers.h"
+#include "Logging/MessageLog.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+
 #include "AirBlueprintLib.h"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>
-#include "Logging/MessageLog.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "UnrealSensors/UnrealSensorFactory.h"
+
+#ifndef AIRLIB_NO_RPC
+
+#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
+
+#if defined _WIN32 || defined _WIN64
+#include "AllowWindowsPlatformTypes.h"
+#endif
+#include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
+#if defined _WIN32 || defined _WIN64
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+#endif
 
 
 ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
@@ -21,26 +38,23 @@ ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
+}
 
-    //create control server
-    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_) {
-        try {
-            vehicle_connector_->startApiServer();
-        }
-        catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-        }
-    }
 
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
+{
+#ifdef AIRLIB_NO_RPC
+    return ASimModeBase::createApiServer();
+#else
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
+        getSimModeApi(), getSettings().api_server_address));
+#endif
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //stop physics thread before we dismental
     stopAsyncUpdator();
-
-    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_)
-        vehicle_connector_->stopApiServer();
 
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
@@ -93,6 +107,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
     }
 
+
     //find all vehicle pawns
     {
         TArray<AActor*> pawns;
@@ -143,6 +158,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 
+
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
@@ -187,15 +203,13 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), & wrapper->getNedTransform());
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
     auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
-        wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
-            vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller
-    );
+        wrapper, vehicle_params_.back().get(), manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
@@ -236,7 +250,7 @@ void ASimModeWorldMultiRotor::setupClockSpeed()
         else {
             //for slowing down, this don't generate instability
             ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
-            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
+                static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
         }
     }
     else

@@ -44,7 +44,7 @@ public:
     }
     virtual ~MultirotorApi() = default;
 
-    bool armDisarm(bool arm)
+    virtual bool armDisarm(bool arm) override
     {
         CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
         pending_ = std::make_shared<DirectCancelableBase>();
@@ -476,6 +476,7 @@ private:// types
         virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
             controller->moveOnPath(path_, velocity_, drivetrain_, yaw_mode_, lookahead_, adaptive_lookahead_, cancelable);
         }
+        virtual ~MoveOnPath() = default;
     };
 
 

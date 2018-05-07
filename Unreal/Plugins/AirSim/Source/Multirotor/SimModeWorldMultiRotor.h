@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "FlyingPawn.h"
 #include "common/Common.hpp"
 #include "MultiRotorConnector.h"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
@@ -22,6 +24,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     VehiclePawnWrapper* getFpvVehiclePawnWrapper() const override;
     std::string getLogString() const;
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
+
 
 protected:
     typedef AFlyingPawn TMultiRotorPawn;
