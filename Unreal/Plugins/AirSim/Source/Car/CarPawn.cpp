@@ -41,7 +41,7 @@ ACarPawn::ACarPawn()
 
     // Create In-Car camera component 
     InternalCameraBase1 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase1"));
-    InternalCameraBase1->SetRelativeLocation(FVector(36.0f, 0, 50.0f)); //center
+    InternalCameraBase1->SetRelativeLocation(FVector(36.0f, 0, 75.0f)); //center
     InternalCameraBase1->SetupAttachment(GetMesh());
     InternalCameraBase2 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase2"));
     InternalCameraBase2->SetRelativeLocation(FVector(36.0f, -10, 50.0f)); //left
