@@ -13,13 +13,14 @@
 UCLASS()
 class AIRSIM_API AAirSimGameMode : public AGameModeBase
 {
-    GENERATED_BODY()
+public:
+	GENERATED_BODY()
     
     virtual void StartPlay() override;
     
     AAirSimGameMode(const FObjectInitializer& ObjectInitializer);
     
-private:
-    UGameUserSettings* GetGameUserSettings();
+//private:
+    //UGameUserSettings* GetGameUserSettings();
 
 };

@@ -28,13 +28,14 @@ if [ "$(uname)" == "Darwin" ]; then # osx
 
     #below takes way too long
     # brew install llvm@3.9
-    brew install --force-bottle llvm@5.0
+    brew tap llvm-hs/homebrew-llvm
+    brew install llvm-5.0
 
     brew install wget
     brew install coreutils
 
-    export C_COMPILER=/usr/local/opt/llvm\@5.09/bin/clang
-    export COMPILER=/usr/local/opt/llvm\@5.0/bin/clang++
+    export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
+    export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
 else #linux
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo /usr/sbin/useradd -G dialout $USER
@@ -93,7 +94,7 @@ fi
 if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
     mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
 fi
-if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.1.10" ]; then
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.2.0" ]; then
     if $downloadHighPolySuv; then
         echo "*********************************************************************************************"
         echo "Downloading high-poly car assets.... The download is ~37MB and can take some time."
@@ -105,7 +106,7 @@ if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.1.10" ]; then
         fi
         mkdir -p "suv_download_tmp"
         cd suv_download_tmp
-        wget  https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip
+        wget  https://github.com/Microsoft/AirSim/releases/download/v1.2.0/car_assets.zip
         if [ -d "../Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
             rm -rf "../Unreal/Plugins/AirSim/Content/VehicleAdv/SUV"
         fi        
