@@ -42,12 +42,18 @@ public:
         unsigned long connection_error_code = std::numeric_limits<unsigned long>::max();
     };
 
-    void getJoyStickState(int index, State& state) const;
+    void getJoyStickState(int index, SimJoyStick::State& state) const;
     // strength ranges from -1 to 1
     void setAutoCenter(int index, double strength);
 
     // strength ranges from 0 to 1
     void setWheelRumble(int index, double strength);
+
+	// strength ranges from 0 to 1
+	void setDamper(int index, double strength);
+
+	// strength ranges from -1 to 1
+	void setHitEffect(int index, double strength);
     
     SimJoyStick();
     ~SimJoyStick();    //required for pimpl

@@ -79,6 +79,9 @@ void CarPawnSimApi::updateRendering(float dt)
     }
 }
 
+#define AUTOCENTERGAIN 0.55
+#define DAMPERGAIN 0.4
+
 void CarPawnSimApi::updateCarControls()
 {
     auto rc_data = getRCData();
@@ -98,16 +101,52 @@ void CarPawnSimApi::updateCarControls()
 
         // Thrustmaster devices
         if (rc_data.vendor_id == "VID_044F") {
-            joystick_controls_.steering = rc_data.yaw;
+            joystick_controls_.steering = rc_data.yaw * 1.25;
             joystick_controls_.throttle = (-rc_data.right_z + 1) / 2;
             joystick_controls_.brake = rc_data.throttle;
 
-            auto car_state = vehicle_api_->getCarState();
-            float rumble_strength = 0.66 + (car_state.rpm
-                / car_state.maxrpm) / 3;
-            float auto_center = (1.0 - 1.0 / (std::abs(car_state.speed / 120) + 1.0))
-            * (rc_data.yaw / 3);
-            setRCForceFeedback(rumble_strength, auto_center);
+			auto carpawn = dynamic_cast<ACarPawn*>(getPawn());
+			if (carpawn != nullptr) {
+				std::unique_ptr<ACarPawn::HitUtilities>* hitUtilities_ = &carpawn->GetHitUtilities();
+
+				float rumble_strength = 1.0 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
+					/ carpawn->GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
+
+				double speed = carpawn->GetVehicleMovement()->GetForwardSpeed();
+
+				float damper_strength = (-std::sqrt(std::abs(speed) * (8.0 * std::pow(DAMPERGAIN, 2))) / 15 + DAMPERGAIN);
+
+				// Hit or autocenter, not both
+				if (hitUtilities_ == nullptr || *hitUtilities_ == nullptr || !(*hitUtilities_)->IsHitPhysicalEffectOn()) {
+					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.0;
+					float autocenter_strength = (1.0 - 1.0 / (std::abs(speed / 110) + 1.0))
+						* std::sqrt(std::abs(joystick_controls_.steering / 2.0)) * steeringSign * AUTOCENTERGAIN;
+
+					UAirBlueprintLib::LogMessageString("Hit:", "hit off", LogDebugLevel::Informational);
+
+					// 0 if no collide 
+					if (hitUtilities_ != nullptr && *hitUtilities_ != nullptr && !(*hitUtilities_)->IsHitvirtualEffectOn()) {
+						// must be released, not active
+						(*hitUtilities_).reset();
+						*hitUtilities_ = nullptr;
+					}
+
+					setRCForceFeedback(rumble_strength, autocenter_strength, damper_strength, 0, true);
+				}
+				else {
+					UAirBlueprintLib::LogMessageString("Hit:", "hit on", LogDebugLevel::Informational);
+
+					if ((*hitUtilities_)->freshHit) {
+						(*hitUtilities_)->freshHit = false;
+						(*hitUtilities_)->hitSpeed = speed;
+					}
+
+					float hit_strength = (*hitUtilities_)->GetDirectionSign() * (*hitUtilities_)->hitStrength
+						* ((std::abs((*hitUtilities_)->hitSpeed) + 80) / 60);
+
+					setRCForceFeedback(rumble_strength, 0, damper_strength, hit_strength, false);
+				}
+			}
         }
         // Anything else, typically Logitech G920 wheel
         else {
@@ -118,16 +157,16 @@ void CarPawnSimApi::updateCarControls()
         //Two steel levers behind wheel
         joystick_controls_.handbrake = (rc_data.getSwitch(5)) | (rc_data.getSwitch(6)) ? 1 : 0;
 
-        if ((rc_data.getSwitch(8)) | (rc_data.getSwitch(1))) { //RSB button or B button
-            joystick_controls_.manual_gear = -1;
-            joystick_controls_.is_manual_gear = true;
-            joystick_controls_.gear_immediate = true;
-        }
-        else if ((rc_data.getSwitch(9)) | (rc_data.getSwitch(0))) { //LSB button or A button
-            joystick_controls_.manual_gear = 0;
-            joystick_controls_.is_manual_gear = false;
-            joystick_controls_.gear_immediate = true;
-        }
+		auto timeNow = scalableClock.nowNanos();
+		if (msr::airlib::ClockBase::elapsedBetween(timeNow, prevTime) * 1.0E3 > 256)
+		{
+			if ((rc_data.getSwitch(8)) | (rc_data.getSwitch(1)) | (rc_data.getSwitch(9)) | (rc_data.getSwitch(0))) { //RSB button or B button
+				joystick_controls_.manual_gear = current_controls_.manual_gear < 0 ? 0 : -1;
+				joystick_controls_.is_manual_gear = !current_controls_.manual_gear;
+				joystick_controls_.gear_immediate = true;
+			}
+			prevTime = timeNow;
+		}
 
         current_controls_ = joystick_controls_;
     }

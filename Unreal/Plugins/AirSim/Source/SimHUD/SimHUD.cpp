@@ -2,6 +2,7 @@
 #include "ConstructorHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 
 #include "Vehicles/Multirotor/SimModeWorldMultiRotor.h"
 #include "Vehicles/Car/SimModeCar.h"

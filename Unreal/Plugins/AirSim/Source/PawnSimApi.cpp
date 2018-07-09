@@ -199,11 +199,19 @@ std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageC
         return std::vector<uint8_t>();
 }
 
-void PawnSimApi::setRCForceFeedback(float rumble_strength, float auto_center)
+void PawnSimApi::setRCForceFeedback(float rumble_strength, float auto_center, float damper_strength, float hit_strength, bool autocenter_is_on)
 {
     if (joystick_state_.is_initialized) {
         joystick_.setWheelRumble(getRemoteControlID(), rumble_strength);
-        joystick_.setAutoCenter(getRemoteControlID(), auto_center);
+
+		if (autocenter_is_on) {
+			joystick_.setAutoCenter(getRemoteControlID(), auto_center);
+		}
+		else {
+			joystick_.setHitEffect(getRemoteControlID(), hit_strength);
+		}
+
+		joystick_.setDamper(getRemoteControlID(), damper_strength);
     }
 }
 

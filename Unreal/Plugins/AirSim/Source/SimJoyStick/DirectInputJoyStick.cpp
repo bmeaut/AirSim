@@ -68,6 +68,9 @@ private:
     LPDIRECTINPUTEFFECT		g_pWheelRumbleHandle = nullptr;
     DIEFFECT				g_sWheelRumbleConfig;
 
+	LPDIRECTINPUTEFFECT		g_pDamperHandle = nullptr;
+	DIEFFECT				g_sDamperConfig;
+
     DIJOYCONFIG PreferredJoyCfg = { 0 };
     DI_ENUM_CONTEXT enumContext;
 
@@ -98,7 +101,7 @@ public:
 
     }
 
-#define FFWRMAX 0.08
+#define FFWRMAX 0.095
 
     // Strength ranges from 0 to 1
     void setWheelRumbleStrength(double strength)
@@ -113,6 +116,32 @@ public:
                 DIEP_TYPESPECIFICPARAMS | DIEP_START);
         }
     }
+
+#define FFDMAX 1.0
+
+	// Strength ranges from 0 to 1
+	void setDamperStrength(double strength) {
+		DICONDITION c = { 0, FFDMAX * strength * 10000, FFDMAX * strength * 10000, 0,0,0 };
+
+		g_sDamperConfig.cbTypeSpecificParams = sizeof(DICONDITION);
+		g_sDamperConfig.lpvTypeSpecificParams = &c;
+
+		g_pDamperHandle->SetParameters(&g_sDamperConfig, DIEP_TYPESPECIFICPARAMS | DIEP_START);
+	}
+
+	// Strendgth rangom from -1 to 1
+	void setHitEffect(double strength) {
+		DICONSTANTFORCE cf = { strength * 10000 };
+
+		g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
+		g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
+
+		if (g_pAutoCenterHandle) {
+			g_pAutoCenterHandle->SetParameters(&g_sAutoCenterConfig, DIEP_DIRECTION |
+				DIEP_TYPESPECIFICPARAMS | DIEP_START);
+		}
+
+	}
 
     const JoystickState& getState(bool update_state = true)
     {
@@ -156,10 +185,7 @@ private:
 
     HRESULT InitForceFeedback()
     {
-
         HRESULT hr;
-        DWORD rgdwAxes[2] = { DIJOFS_X, DIJOFS_Y };
-        LONG rglDirection[2] = { 0, 0 };
 
         if (FAILED(hr = g_pJoystick->SetCooperativeLevel(GetActiveWindow(), DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
             return hr;
@@ -167,65 +193,55 @@ private:
         if (FAILED(hr = g_pJoystick->Acquire()))
             return hr;
 
-        // Autocenter
-        ZeroMemory(&g_sAutoCenterConfig, sizeof(g_sAutoCenterConfig));
+		DWORD rgdwAxes[2] = { DIJOFS_X, DIJOFS_Y };
+		LONG rglDirection[2] = { 0, 0 };
 
-        g_sAutoCenterConfig.dwStartDelay = 0;
+		DIEFFECT g_sEmptyConfig = {
+			sizeof(DIEFFECT),
+			DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS,
+			INFINITE, 0, DI_FFNOMINALMAX,
+			DIEB_NOTRIGGER, 0, 1, rgdwAxes,
+			rglDirection, 0, 0, 0, 0 };
 
-        g_sAutoCenterConfig.dwSize = sizeof(DIEFFECT);
-        g_sAutoCenterConfig.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
-        g_sAutoCenterConfig.dwDuration = INFINITE;
-        g_sAutoCenterConfig.dwSamplePeriod = 0;
-        g_sAutoCenterConfig.dwGain = DI_FFNOMINALMAX;
-        g_sAutoCenterConfig.dwTriggerButton = DIEB_NOTRIGGER;
-        g_sAutoCenterConfig.dwTriggerRepeatInterval = 0;
-        g_sAutoCenterConfig.cAxes = 1;
-        g_sAutoCenterConfig.rgdwAxes = rgdwAxes;
-        g_sAutoCenterConfig.rglDirection = rglDirection;
+		ZeroMemory(&g_sAutoCenterConfig, sizeof(g_sAutoCenterConfig));
+		ZeroMemory(&g_sWheelRumbleConfig, sizeof(g_sWheelRumbleConfig));
+		ZeroMemory(&g_sDamperConfig, sizeof(g_sDamperConfig));
 
-        g_sAutoCenterConfig.lpEnvelope = 0;
-        g_sAutoCenterConfig.dwStartDelay = 0;
+		g_sAutoCenterConfig = g_sWheelRumbleConfig = g_sDamperConfig = g_sEmptyConfig;
 
-        DICONSTANTFORCE cf = { 0 };
+		// Autocenter
+		DICONSTANTFORCE cf = { 0 };
+		g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
+		g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
 
-        g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
-        g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
+		if (FAILED(hr = g_pJoystick->CreateEffect(GUID_ConstantForce, &g_sAutoCenterConfig, &g_pAutoCenterHandle, nullptr)))
+			return hr;
 
-        if (FAILED(hr = g_pJoystick->CreateEffect(GUID_ConstantForce, &g_sAutoCenterConfig, &g_pAutoCenterHandle, nullptr)))
-            return hr;
+		if (FAILED(hr = g_pAutoCenterHandle->Start(INFINITE, 0)))
+			return hr;
 
-        if (FAILED(hr = g_pAutoCenterHandle->Start(INFINITE, 0)))
-            return hr;
+		// Rumble
+		DIPERIODIC pf = { 0,0,0,0.08 };
+		g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);
+		g_sWheelRumbleConfig.lpvTypeSpecificParams = &pf;
 
-        // Rumble
-        ZeroMemory(&g_sWheelRumbleConfig, sizeof(g_sWheelRumbleConfig));
+		if (FAILED(hr = g_pJoystick->CreateEffect(GUID_Sine, &g_sWheelRumbleConfig, &g_pWheelRumbleHandle, nullptr)))
+			return hr;
 
-        g_sWheelRumbleConfig.dwStartDelay = 0;
+		if (FAILED(hr = g_pWheelRumbleHandle->Start(INFINITE, 0)))
+			return hr;
 
-        g_sWheelRumbleConfig.dwSize = sizeof(DIEFFECT);
-        g_sWheelRumbleConfig.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
-        g_sWheelRumbleConfig.dwDuration = INFINITE;
-        g_sWheelRumbleConfig.dwSamplePeriod = 0;
-        g_sWheelRumbleConfig.dwGain = DI_FFNOMINALMAX;
-        g_sWheelRumbleConfig.dwTriggerButton = DIEB_NOTRIGGER;
-        g_sWheelRumbleConfig.dwTriggerRepeatInterval = 0;
-        g_sWheelRumbleConfig.cAxes = 1;
-        g_sWheelRumbleConfig.rgdwAxes = rgdwAxes;
-        g_sWheelRumbleConfig.rglDirection = rglDirection;
+		// Rumble
+		DICONDITION c = { 0,100,100 };
+		g_sDamperConfig.cbTypeSpecificParams = sizeof(DICONDITION);
+		g_sDamperConfig.lpvTypeSpecificParams = &c;
 
-        g_sWheelRumbleConfig.lpEnvelope = 0;
-        g_sWheelRumbleConfig.dwStartDelay = 0;
+		if (FAILED(hr = g_pJoystick->CreateEffect(GUID_Damper, &g_sDamperConfig, &g_pDamperHandle, nullptr)))
+			return hr;
 
-        DIPERIODIC pf = { 0,0,0,0.08 };
+		if (FAILED(hr = g_pDamperHandle->Start(INFINITE, 0)))
+			return hr;
 
-        g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);
-        g_sWheelRumbleConfig.lpvTypeSpecificParams = &pf;
-
-        if (FAILED(hr = g_pJoystick->CreateEffect(GUID_Sine, &g_sWheelRumbleConfig, &g_pWheelRumbleHandle, nullptr)))
-            return hr;
-
-        if (FAILED(hr = g_pWheelRumbleHandle->Start(INFINITE, 0)))
-            return hr;
 
         return S_OK;
     }
@@ -716,6 +732,14 @@ void DirectInputJoyStick::setAutoCenter(double strength)
 void DirectInputJoyStick::setWheelRumble(double strength)
 {
     pimpl_->setWheelRumbleStrength(FMath::Clamp<double>(strength, 0.0, 1.0));
+}
+void DirectInputJoyStick::setDamper(double strength)
+{
+	pimpl_->setDamperStrength(FMath::Clamp(strength, 0.0, 1.0));
+}
+void DirectInputJoyStick::setHitEffect(double strength)
+{
+	pimpl_->setHitEffect(FMath::Clamp(strength, -1.0, 1.0));
 }
 const DirectInputJoyStick::JoystickState& DirectInputJoyStick::getState(bool update_state)
 {

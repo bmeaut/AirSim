@@ -61,6 +61,14 @@ public:
     		controllers_[index]->setWheelRumble(strength);
 	}
 
+	void setDamper(unsigned int index, double strength) {
+		controllers_[index]->setDamper(strength);
+	}
+
+	void setHitEffect(unsigned int index, double strength) {
+		controllers_[index]->setHitEffect(strength);
+	}
+
 
 private:
     float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
@@ -409,4 +417,13 @@ void SimJoyStick::setAutoCenter(int index, double strength)
 void SimJoyStick::setWheelRumble(int index, double strength)
 {
     pimpl_->setWheelRumble(index, strength);
+}
+
+void SimJoyStick::setDamper(int index, double strength)
+{
+	pimpl_->setDamper(index, strength);
+}
+
+void SimJoyStick::setHitEffect(int index, double strength) {
+	pimpl_->setHitEffect(index, strength);
 }

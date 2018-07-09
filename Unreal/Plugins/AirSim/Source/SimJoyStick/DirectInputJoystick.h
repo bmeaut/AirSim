@@ -47,6 +47,13 @@ public:
 
     // strength ranges from 0 to 1
     void setWheelRumble(double strength);
+
+	// strength ranges from 0 to 1
+	void setDamper(double strength);
+
+	// strength ranges from -1 to 1
+	void setHitEffect(double strength);
+
     const JoystickState& getState(bool update_state = true);
     const Capabilities& getCapabilities();
     const JoystickInfo& getJoystickInfo();

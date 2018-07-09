@@ -49,6 +49,9 @@ private:
     void updateCarControls();
 
 private:
+	msr::airlib::ScalableClock scalableClock;
+	msr::airlib::TTimePoint prevTime;
+
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
     std::vector<std::string> vehicle_api_messages_;
 

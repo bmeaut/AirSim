@@ -161,6 +161,22 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
 {
     pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
+		
+	if (hitUtilities_ == nullptr) {
+		hitUtilities_ = std::make_unique<HitUtilities>();
+
+		auto timeNow = hitUtilities_->scalableClock.nowNanos();
+
+		std::ostringstream oss; oss << timeNow;
+		UAirBlueprintLib::LogMessageString("Hit time:", oss.str(), LogDebugLevel::Informational);
+
+		hitUtilities_->lastHitTime = timeNow;
+		hitUtilities_->hitDirection = ((double)rand() / (RAND_MAX)) >= 0.5 ? 1.0 : -1.0;
+	}
+	else {
+		//do nothing if in windows
+		return;
+	}
 }
 
 UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
@@ -416,6 +432,34 @@ void ACarPawn::onReverseReleased()
         keyboard_controls_.manual_gear = 0;
         keyboard_controls_.gear_immediate = true;
     }
+}
+
+#define HIT_PHYSICAL_EFFECT_LENGTH_IN_MS 100
+#define HIT_VIRTUAL_EFFECT_WINDOW_LENGTH_MS 1000
+
+float ACarPawn::HitUtilities::GetDirectionSign() const {
+	auto timeNow = scalableClock.nowNanos();
+	
+	if (msr::airlib::ClockBase::elapsedBetween(timeNow, lastHitTime) * 1.0E3 < (int)((float)HIT_PHYSICAL_EFFECT_LENGTH_IN_MS * 0.75)) {
+		return hitDirection;
+	}
+	else {
+		return hitDirection * -1.0;
+	}
+}
+
+bool ACarPawn::HitUtilities::IsHitPhysicalEffectOn() const {
+	auto timeNow = scalableClock.nowNanos();
+	return msr::airlib::ClockBase::elapsedBetween(timeNow, lastHitTime) * 1.0E3 < HIT_PHYSICAL_EFFECT_LENGTH_IN_MS;
+}
+
+bool ACarPawn::HitUtilities::IsHitvirtualEffectOn() const {
+	auto timeNow = scalableClock.nowNanos();
+	return msr::airlib::ClockBase::elapsedBetween(timeNow, lastHitTime) * 1.0E3 < HIT_VIRTUAL_EFFECT_WINDOW_LENGTH_MS;
+}
+
+std::unique_ptr<ACarPawn::HitUtilities>& ACarPawn::GetHitUtilities() {
+	return hitUtilities_;
 }
 
 #undef LOCTEXT_NAMESPACE

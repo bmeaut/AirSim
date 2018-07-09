@@ -90,7 +90,7 @@ public: //Unreal specific methods
     const NedTransform& getNedTransform() const;
 
     void possess();
-    void setRCForceFeedback(float rumble_strength, float auto_center);
+	void setRCForceFeedback(float rumble_strength, float auto_center, float damper_strength, float hit_strength, bool autocenter_is_on);
 
 private: //methods
     bool canTeleportWhileMove()  const;

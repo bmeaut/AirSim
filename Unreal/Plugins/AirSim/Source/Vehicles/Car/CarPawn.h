@@ -52,6 +52,25 @@ public:
         return keyboard_controls_;
     }
 
+	struct HitUtilities {
+		msr::airlib::ScalableClock scalableClock;
+		msr::airlib::TTimePoint lastHitTime;
+
+		// Ranges from 0 to 1
+		float const hitStrength = 0.2;
+
+		bool freshHit = true;
+
+		float hitDirection;
+		float hitSpeed;
+
+		float GetDirectionSign() const;
+		bool IsHitPhysicalEffectOn() const;
+		bool IsHitvirtualEffectOn() const;
+	};
+
+	std::unique_ptr<HitUtilities>& GetHitUtilities();
+
 private:
     void updateHUDStrings();
     void setupVehicleMovementComponent();
@@ -100,4 +119,6 @@ private:
     FText last_gear_;
     FColor	last_gear_display_color_;
     FColor	last_gear_display_reverse_color_;
+
+	std::unique_ptr<HitUtilities> hitUtilities_ = nullptr;
 };
