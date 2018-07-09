@@ -87,6 +87,7 @@
     <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingFile.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingThread.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\RenderRequest.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUD.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoyStick.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingFile.h" />
     <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingThread.h" />
     <ClInclude Include="unreal\plugins\airsim\source\RenderRequest.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUD.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoystick.h" />
