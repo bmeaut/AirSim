@@ -67,7 +67,7 @@ public: //types
     };
 
     struct RCSettings {
-        int remote_control_id = -1;
+        int remote_control_id = 0;
         bool allow_api_when_disconnected = false;
     };
 

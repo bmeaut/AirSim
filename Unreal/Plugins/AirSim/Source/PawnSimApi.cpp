@@ -237,6 +237,8 @@ msr::airlib::RCData PawnSimApi::getRCData() const
         rc_data_.switches = joystick_state_.buttons;
         rc_data_.vendor_id = joystick_state_.pid_vid.substr(0, joystick_state_.pid_vid.find('&'));
 
+		rc_data_.is_initialized = true;
+
         
         //switch index 0 to 7 for FrSky Taranis RC is:
         //front-upper-left, front-upper-right, top-right-left, top-right-left, top-left-right, top-right-right, top-left-left, top-right-left
