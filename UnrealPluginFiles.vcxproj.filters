@@ -81,6 +81,9 @@
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,6 +180,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.h">
