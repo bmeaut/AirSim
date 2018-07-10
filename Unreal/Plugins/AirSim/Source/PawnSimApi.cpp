@@ -9,6 +9,19 @@
 #include "PIPCamera.h"
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
+#include <thread>
+
+#include <windows.h>
+#include <stdio.h>
+
+
+struct Images {
+    uint8 sceneData[147456 + 147456];
+    float depthData[36864];
+    //36864
+};
+
+struct Images* dataPointer;
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
@@ -46,6 +59,30 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     //add listener for pawn's collision event
     pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
     pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
+
+    sceneRequest.camera_name = "0";
+    sceneRequest.compress = false;
+    sceneRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+    sceneRequest.pixels_as_float = false;
+
+    seqRequest.camera_name = "0";
+    seqRequest.compress = false;
+    seqRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Segmentation;
+    seqRequest.pixels_as_float = false;
+
+    depthRequest.camera_name = "0";
+    depthRequest.compress = false;
+    depthRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::DepthVis;
+    depthRequest.pixels_as_float = true;
+
+    requests.push_back(sceneRequest);
+    requests.push_back(seqRequest);
+    requests.push_back(depthRequest);
+
+    HANDLE handle;
+
+    handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
+    dataPointer = (struct Images*) MapViewOfFile(handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Images));
 }
 
 void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotator)
@@ -64,7 +101,6 @@ void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotat
 
 void PawnSimApi::pawnTick(float dt)
 {
-
     update();
     updateRenderedState(dt);
     updateRendering(dt);
@@ -134,7 +170,7 @@ void PawnSimApi::createCamerasFromSettings()
     }
 }
 
-void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Deflect along the surface when we collide.
@@ -308,6 +344,12 @@ void PawnSimApi::update()
     //kinematics_->update();
 
     VehicleSimApiBase::update();
+
+    const auto responses = getImages(requests);
+    std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
+    std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->sceneData + 147456);
+    std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
+
 }
 
 //void playBack()
@@ -350,7 +392,7 @@ void PawnSimApi::toggleTrace()
 
     if (!state_.tracing_enabled)
         UKismetSystemLibrary::FlushPersistentDebugLines(pawn_->GetWorld());
-    else {     
+    else {
         state_.debug_position_offset = state_.current_debug_position - state_.current_position;
         state_.last_debug_position = state_.last_position;
     }
