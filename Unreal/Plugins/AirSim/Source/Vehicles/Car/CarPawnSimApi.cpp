@@ -107,7 +107,7 @@ void CarPawnSimApi::updateCarControls()
 
 			auto carpawn = dynamic_cast<ACarPawn*>(getPawn());
 			if (carpawn != nullptr) {
-				std::unique_ptr<ACarPawn::HitUtilities>* hitUtilities_ = &carpawn->GetHitUtilities();
+				std::unique_ptr<ACarPawn::HitUtilities>& hitUtilities_ = carpawn->GetHitUtilities();
 
 				float rumble_strength = 1.0 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
 					/ carpawn->GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
@@ -117,7 +117,7 @@ void CarPawnSimApi::updateCarControls()
 				float damper_strength = (-std::sqrt(std::abs(speed) * (8.0 * std::pow(DAMPERGAIN, 2))) / 15 + DAMPERGAIN);
 
 				// Hit or autocenter, not both
-				if (hitUtilities_ == nullptr || *hitUtilities_ == nullptr || !(*hitUtilities_)->IsHitPhysicalEffectOn()) {
+				if (hitUtilities_ == nullptr || !hitUtilities_->IsHitPhysicalEffectOn()) {
 					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.0;
 					float autocenter_strength = (1.0 - 1.0 / (std::abs(speed / 110) + 1.0))
 						* std::sqrt(std::abs(joystick_controls_.steering / 2.0)) * steeringSign * AUTOCENTERGAIN;
@@ -125,10 +125,9 @@ void CarPawnSimApi::updateCarControls()
 					UAirBlueprintLib::LogMessageString("Hit:", "hit off", LogDebugLevel::Informational);
 
 					// 0 if no collide 
-					if (hitUtilities_ != nullptr && *hitUtilities_ != nullptr && !(*hitUtilities_)->IsHitvirtualEffectOn()) {
+					if (hitUtilities_ != nullptr && !hitUtilities_->IsHitvirtualEffectOn()) {
 						// must be released, not active
-						(*hitUtilities_).reset();
-						*hitUtilities_ = nullptr;
+						hitUtilities_.reset(nullptr);
 					}
 
 					setRCForceFeedback(rumble_strength, autocenter_strength, damper_strength, 0, true);
@@ -136,13 +135,13 @@ void CarPawnSimApi::updateCarControls()
 				else {
 					UAirBlueprintLib::LogMessageString("Hit:", "hit on", LogDebugLevel::Informational);
 
-					if ((*hitUtilities_)->freshHit) {
-						(*hitUtilities_)->freshHit = false;
-						(*hitUtilities_)->hitSpeed = speed;
+					if (hitUtilities_->freshHit) {
+						hitUtilities_->freshHit = false;
+						hitUtilities_->hitSpeed = speed;
 					}
 
-					float hit_strength = (*hitUtilities_)->GetDirectionSign() * (*hitUtilities_)->hitStrength
-						* ((std::abs((*hitUtilities_)->hitSpeed) + 80) / 60);
+					float hit_strength = hitUtilities_->GetDirectionSign() * hitUtilities_->hitStrength
+						* ((std::abs(hitUtilities_->hitSpeed) + 80) / 60);
 
 					setRCForceFeedback(rumble_strength, 0, damper_strength, hit_strength, false);
 				}
