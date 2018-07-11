@@ -55,7 +55,7 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
 	REM //remove any previous versions
 	rmdir external\rpclib /q /s
 
-	powershell -command "& { Expand-Archive -Path external\rpclib.zip -OutputPath external\rpclib }"
+	powershell -command "& { Microsoft.PowerShell.Archive\Expand-Archive -Path external\rpclib.zip -DestinationPath external\rpclib }"
 	del external\rpclib.zip /q
 	
 	REM //Don't fail the build if the high-poly car is unable to be downloaded
@@ -108,7 +108,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
         powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.2.0/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
         @echo off
 		rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
-        powershell -command "& { Expand-Archive -Path suv_download_tmp\car_assets.zip -OutputPath Unreal\Plugins\AirSim\Content\VehicleAdv }"
+        powershell -command "& { Microsoft.PowerShell.Archive\Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv }"
         rmdir suv_download_tmp /q /s
         
         REM //Don't fail the build if the high-poly car is unable to be downloaded
@@ -123,7 +123,7 @@ REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
     powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
-    powershell -command "& { Expand-Archive -Path eigen3.zip -OutputPath AirLib\deps }"
+    powershell -command "& { Microsoft.PowerShell.Archive\Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
     move AirLib\deps\eigen* AirLib\deps\del_eigen
     mkdir AirLib\deps\eigen3
     move AirLib\deps\del_eigen\Eigen AirLib\deps\eigen3\Eigen
