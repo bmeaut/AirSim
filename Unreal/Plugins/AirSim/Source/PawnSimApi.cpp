@@ -16,7 +16,7 @@
 
 
 struct Images {
-    uint8 sceneData[147456 + 147456];
+    uint8 sceneData[147456 + 147456 + 147456];
     float depthData[36864];
     //36864
 };
@@ -74,11 +74,17 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     depthRequest.compress = false;
     depthRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::DepthVis;
     depthRequest.pixels_as_float = true;
+	
+	backRequest.camera_name = "back_center";
+	backRequest.compress = false;
+	backRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+	backRequest.pixels_as_float = false;
 
     requests.push_back(sceneRequest);
     requests.push_back(seqRequest);
     requests.push_back(depthRequest);
-
+    requests.push_back(backRequest);
+	
     HANDLE handle;
 
     handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
@@ -348,6 +354,7 @@ void PawnSimApi::update()
     const auto responses = getImages(requests);
     std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
     std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->sceneData + 147456);
+	std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->sceneData + 147456 + 147456);
     std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
 
 }
