@@ -342,6 +342,17 @@ void PawnSimApi::reset()
     environment_->reset();
 }
 
+void PawnSimApi::enableBackMirror(bool is_enabled) {
+    if (is_enabled) {
+        requests.push_back(backRequest);
+        back_mirror_enabled = true;
+    }
+    else {
+        requests.pop_back();
+        back_mirror_enabled = false;
+    }
+}
+
 void PawnSimApi::update()
 {
     //update position from kinematics so we have latest position after physics update
@@ -354,7 +365,8 @@ void PawnSimApi::update()
     const auto responses = getImages(requests);
     std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
     std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->sceneData + 147456);
-	std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->sceneData + 147456 + 147456);
+	if(back_mirror_enabled)
+	    std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->sceneData + 147456 + 147456);
     std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
 
 }

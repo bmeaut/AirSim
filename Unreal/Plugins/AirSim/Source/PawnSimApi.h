@@ -58,6 +58,7 @@ public: //implementation of VehicleSimApiBase
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
+    virtual void enableBackMirror(bool is_enabled) override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
@@ -127,6 +128,8 @@ private: //vars
     mutable SimJoyStick joystick_;
     mutable SimJoyStick::State joystick_state_;
 
+    bool back_mirror_enabled = false;
+	
     struct State {
         FVector start_location;
         FRotator start_rotation;
