@@ -156,5 +156,6 @@ private: //vars
     std::unique_ptr<msr::airlib::Environment> environment_;
 
     msr::airlib::ImageCaptureBase::ImageRequest sceneRequest, seqRequest, depthRequest;
+	msr::airlib::ImageCaptureBase::ImageRequest sceneRequestLeft, sceneRequestRight, seqRequestLeft, seqRequestRight;
     std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
 };

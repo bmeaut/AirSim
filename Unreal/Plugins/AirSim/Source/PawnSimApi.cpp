@@ -13,15 +13,22 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <chrono>
 
 
 struct Images {
-    uint8 sceneData[147456 + 147456];
+    uint8 sceneData[147456];
+	uint8 sceneData2[147456];
+	uint8 segData[147456];	
+	uint8 segData2[147456];
     float depthData[36864];
     //36864
 };
 
 struct Images* dataPointer;
+
+int imageCapturePerSec = 2;
+std::chrono::milliseconds lastCaptureTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
@@ -60,23 +67,45 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
     pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
 
-    sceneRequest.camera_name = "0";
+    sceneRequest.camera_name = "front_center";
     sceneRequest.compress = false;
     sceneRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
     sceneRequest.pixels_as_float = false;
 
-    seqRequest.camera_name = "0";
+    seqRequest.camera_name = "front_center";
     seqRequest.compress = false;
     seqRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Segmentation;
     seqRequest.pixels_as_float = false;
 
-    depthRequest.camera_name = "0";
+    depthRequest.camera_name = "front_center";
     depthRequest.compress = false;
     depthRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::DepthVis;
     depthRequest.pixels_as_float = true;
 
-    requests.push_back(sceneRequest);
-    requests.push_back(seqRequest);
+	sceneRequestLeft.camera_name = "front_left";
+	sceneRequestLeft.compress = false;
+	sceneRequestLeft.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+	sceneRequestLeft.pixels_as_float = false;
+
+	seqRequestLeft.camera_name = "front_left";
+	seqRequestLeft.compress = false;
+	seqRequestLeft.image_type = msr::airlib::ImageCaptureBase::ImageType::Segmentation;
+	seqRequestLeft.pixels_as_float = false;
+
+	sceneRequestRight.camera_name = "front_right";
+	sceneRequestRight.compress = false;
+	sceneRequestRight.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+	sceneRequestRight.pixels_as_float = false;
+
+	seqRequestRight.camera_name = "front_right";
+	seqRequestRight.compress = false;
+	seqRequestRight.image_type = msr::airlib::ImageCaptureBase::ImageType::Segmentation;
+	seqRequestRight.pixels_as_float = false;
+
+    requests.push_back(sceneRequestLeft);
+    requests.push_back(sceneRequestRight);
+	requests.push_back(seqRequestLeft);
+	requests.push_back(seqRequestRight);
     requests.push_back(depthRequest);
 
     HANDLE handle;
@@ -345,11 +374,19 @@ void PawnSimApi::update()
 
     VehicleSimApiBase::update();
 
-    const auto responses = getImages(requests);
-    std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
-    std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->sceneData + 147456);
-    std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
+	std::time_t result = std::time(nullptr);
+	std::cout << std::asctime(std::localtime(&result))
+		<< result << " seconds since the Epoch\n";
 
+	std::chrono::milliseconds actCaptureTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());	
+	if ((actCaptureTime - lastCaptureTime).count() > 1000 / imageCapturePerSec) {
+		const auto responses = getImages(requests);
+		std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
+		std::copy(responses.at(2).image_data_uint8.begin(), responses.at(2).image_data_uint8.end(), dataPointer->sceneData2);
+		std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->segData);				
+		std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->segData2);
+		std::copy(responses.at(4).image_data_float.begin(), responses.at(4).image_data_float.end(), dataPointer->depthData);
+	}
 }
 
 //void playBack()
