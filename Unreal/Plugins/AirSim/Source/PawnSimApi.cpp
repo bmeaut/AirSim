@@ -83,7 +83,6 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     requests.push_back(sceneRequest);
     requests.push_back(seqRequest);
     requests.push_back(depthRequest);
-    requests.push_back(backRequest);
 	
     HANDLE handle;
 
