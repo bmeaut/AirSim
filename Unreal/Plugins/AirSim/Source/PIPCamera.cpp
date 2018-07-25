@@ -68,10 +68,6 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
-    captures_[0]->MaxViewDistanceOverride = 4000.0f;
-    captures_[5]->MaxViewDistanceOverride = 2000.0f;
-    captures_[6]->MaxViewDistanceOverride = 2000.0f;
-
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
     this->SetActorTickEnabled(false);
