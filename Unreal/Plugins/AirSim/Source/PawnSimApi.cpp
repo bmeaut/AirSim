@@ -14,14 +14,16 @@
 #include <windows.h>
 #include <stdio.h>
 
-
 struct Images {
-    uint8 sceneData[147456 + 147456 + 147456];
+	uint8 imageID;
+	uint8 _padding[3];
+	uint8 sceneData[147456];
+	uint8 segmentationData[147456];
+	uint8 backMirrorSceneData[147456];
     float depthData[36864];
-    //36864
 };
 
-struct Images* dataPointer;
+Images* dataPointer;
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
@@ -85,9 +87,8 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     requests.push_back(depthRequest);
 	
     HANDLE handle;
-
-    handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
-    dataPointer = (struct Images*) MapViewOfFile(handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Images));
+	handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
+	dataPointer = (Images*) MapViewOfFile(handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(Images));
 }
 
 void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotator)
@@ -363,11 +364,11 @@ void PawnSimApi::update()
 
     const auto responses = getImages(requests);
     std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
-    std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->sceneData + 147456);
+    std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->segmentationData);
 	if(back_mirror_enabled)
-	    std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->sceneData + 147456 + 147456);
+	    std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->backMirrorSceneData);
     std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
-
+	dataPointer->imageID++;
 }
 
 //void playBack()
