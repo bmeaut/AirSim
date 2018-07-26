@@ -357,3 +357,5 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
+# AirSimOwnNH files
+Unreal/Environments/AirSimOwnNH/*
