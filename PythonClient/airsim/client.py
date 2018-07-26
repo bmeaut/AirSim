@@ -122,11 +122,41 @@ class VehicleClient:
         self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
-        return self.client.call('simGetGroundTruthKinematics', vehicle_name)
+        kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
+        return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
-        return self.client.call('simGetGroundTruthEnvironment', vehicle_name)
+        env_state = self.client.call('simGetGroundTruthEnvironment', vehicle_name)
+        return EnvironmentState.from_msgpack(env_state)
     simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
+
+    #----------- APIs to control ACharacter in scene ----------/
+    def simCharSetFaceExpression(self, expression_name, value, character_name = ""):
+        self.client.call('simCharSetFaceExpression', expression_name, value, character_name)
+    def simCharGetFaceExpression(self, expression_name, character_name = ""):
+        return self.client.call('simCharGetFaceExpression', expression_name, character_name)
+    def simCharGetAvailableFaceExpressions(self):
+        return self.client.call('simCharGetAvailableFaceExpressions')
+    def simCharSetSkinDarkness(self, value, character_name = ""):
+        self.client.call('simCharSetSkinDarkness', value, character_name)
+    def simCharGetSkinDarkness(self, character_name = ""):
+        return self.client.call('simCharGetSkinDarkness', character_name)
+    def simCharSetSkinAgeing(self, value, character_name = ""):
+        self.client.call('simCharSetSkinAgeing', value, character_name)
+    def simCharGetSkinAgeing(self, character_name = ""):
+        return self.client.call('simCharGetSkinAgeing', character_name)
+    def simCharSetHeadRotation(self, q, character_name = ""):
+        self.client.call('simCharSetHeadRotation', q, character_name)
+    def simCharGetHeadRotation(self, character_name = ""):
+        return self.client.call('simCharGetHeadRotation', character_name)
+    def simCharSetBonePose(self, bone_name, pose, character_name = ""):
+        self.client.call('simCharSetBonePose', bone_name, pose, character_name)
+    def simCharGetBonePose(self, bone_name, character_name = ""):
+        return self.client.call('simCharGetBonePose', bone_name, character_name)
+    def simCharResetBonePose(self, bone_name, character_name = ""):
+        self.client.call('simCharResetBonePose', bone_name, character_name)
+    def simCharSetFacePreset(self, preset_name, value, character_name = ""):
+        self.client.call('simCharSetFacePreset', preset_name, value, character_name)
 
     def cancelLastTask():
         self.client.call('cancelLastTask')

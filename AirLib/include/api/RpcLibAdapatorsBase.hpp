@@ -10,8 +10,10 @@
 #include "physics/Environment.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
-#include "rpc/msgpack.hpp"
 
+#include "common/common_utils/WindowsApisCommonPre.hpp"
+#include "rpc/msgpack.hpp"
+#include "common/common_utils/WindowsApisCommonPost.hpp"
 
 namespace msr { namespace airlib_rpclib {
 

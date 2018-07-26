@@ -9,8 +9,10 @@
 #include "api/RpcLibAdapatorsBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
-#include "rpc/msgpack.hpp"
 
+#include "common/common_utils/WindowsApisCommonPre.hpp"
+#include "rpc/msgpack.hpp"
+#include "common/common_utils/WindowsApisCommonPost.hpp"
 
 namespace msr { namespace airlib_rpclib {
 

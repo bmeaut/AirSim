@@ -73,18 +73,21 @@ public class AirSim : ModuleRules
     {
         //bEnforceIWYU = true; //to support 4.16
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "Landscape" });
+        //for some reason this is required on Windows but not on Linux
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+            bEnableExceptions = true;
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
-        Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
+        Definitions.Add("_CRT_SECURE_NO_WARNINGS=1");
         Definitions.Add("HMD_MODULE_INCLUDED=0");
 
-        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "include"));
-        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
         SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
@@ -101,6 +104,13 @@ public class AirSim : ModuleRules
             PublicAdditionalLibraries.Add("dinput8.lib");
             PublicAdditionalLibraries.Add("dxguid.lib");
         }
+
+		if (Target.Platform == UnrealTargetPlatform.Linux)
+		{
+			// needed when packaging
+			PublicAdditionalLibraries.Add("stdc++");
+			PublicAdditionalLibraries.Add("supc++");
+		}
     }
 
     static void CopyFileIfNewer(string srcFilePath, string destFolder)
@@ -140,7 +150,7 @@ public class AirSim : ModuleRules
         if (isLibrarySupported && IsAddLibInclude)
         {
             // Include path
-            PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
+            PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
 
         Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
