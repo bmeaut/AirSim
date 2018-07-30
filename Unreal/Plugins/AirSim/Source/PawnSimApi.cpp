@@ -344,12 +344,16 @@ void PawnSimApi::reset()
 
 void PawnSimApi::enableBackMirror(bool is_enabled) {
     if (is_enabled) {
-        requests.push_back(backRequest);
-        back_mirror_enabled = true;
+		if (!back_mirror_enabled) {
+			requests.push_back(backRequest);
+			back_mirror_enabled = true;
+		}
     }
     else {
-        requests.pop_back();
-        back_mirror_enabled = false;
+		if (back_mirror_enabled) {
+			requests.pop_back();
+			back_mirror_enabled = false;
+		}
     }
 }
 
