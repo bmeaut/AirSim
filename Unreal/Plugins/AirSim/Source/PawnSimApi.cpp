@@ -365,11 +365,11 @@ void PawnSimApi::update()
     //kinematics_->update();
 
     VehicleSimApiBase::update();
-
-    const auto responses = getImages(requests);
+	auto req = requests;
+    const auto responses = getImages(req);
     std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
     std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->segmentationData);
-	if(back_mirror_enabled)
+	if(responses.size() == 4)
 	    std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->backMirrorSceneData);
     std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
 	dataPointer->imageID++;
