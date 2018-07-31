@@ -11,7 +11,7 @@
 #include "common/EarthUtils.hpp"
 #include <thread>
 #include "EngineUtils.h"
-#include "TestActor.h"
+#include "GenericRelayActor.h"
 
 #include <windows.h>
 #include <stdio.h>
@@ -360,7 +360,7 @@ void PawnSimApi::enableBackMirror(bool is_enabled) {
 }
 
 void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
-	for (TActorIterator<ATestActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+	for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 	{
 		ActorItr->SwitchDayLightState(is_daylight_on);
 	}
