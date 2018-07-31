@@ -84,6 +84,9 @@
     <ClCompile Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+	<ClCompile Include="Unreal\Plugins\AirSim\Source\GenericRelayActor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -185,6 +188,9 @@
     <ClInclude Include="Unreal\Plugins\AirSim\Source\RoadBeaconStaticMeshActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+	<ClCompile Include="Unreal\Plugins\AirSim\Source\GenericRelayActor.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.h">
       <Filter>Source Files</Filter>
     </ClInclude>
