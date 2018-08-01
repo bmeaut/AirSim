@@ -13,6 +13,8 @@
 #include "EngineUtils.h"
 #include "GenericRelayActor.h"
 
+#include "Async.h"
+
 #include <windows.h>
 #include <stdio.h>
 
@@ -360,10 +362,12 @@ void PawnSimApi::enableBackMirror(bool is_enabled) {
 }
 
 void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
-	for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
-	{
-		ActorItr->SwitchDayLightState(is_daylight_on);
-	}
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SwitchDayLightState(is_daylight_on);
+		}
+	});
 }
 
 void PawnSimApi::update()
