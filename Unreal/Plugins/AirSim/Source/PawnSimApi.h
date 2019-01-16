@@ -60,6 +60,7 @@ public: //implementation of VehicleSimApiBase
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void enableBackMirror(bool is_enabled) override;
 	virtual void simSwitchDayLightState(bool is_daylight_on) override;
+	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);

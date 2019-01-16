@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchDayLightState(bool enabled);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchAutoPilotMod(bool enabled);
 };

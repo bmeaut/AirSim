@@ -370,6 +370,15 @@ void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
 	});
 }
 
+void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SwitchAutoPilotMod(is_autopilot_on);
+		}
+	});
+}
+
 void PawnSimApi::update()
 {
     //update position from kinematics so we have latest position after physics update
