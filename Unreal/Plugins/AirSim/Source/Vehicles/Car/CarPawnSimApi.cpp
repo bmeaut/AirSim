@@ -154,7 +154,7 @@ void CarPawnSimApi::updateCarControls()
             joystick_controls_.brake = -rc_data.right_z + 1;
         }
         //Two steel levers behind wheel
-        joystick_controls_.handbrake = (rc_data.getSwitch(5)) | (rc_data.getSwitch(6)) ? 1 : 0;
+        //joystick_controls_.handbrake = (rc_data.getSwitch(5)) | (rc_data.getSwitch(6)) ? 1 : 0;
 
 		auto timeNow = scalableClock.nowNanos();
 		if (msr::airlib::ClockBase::elapsedBetween(timeNow, prevTime) * 1.0E3 > 256)
