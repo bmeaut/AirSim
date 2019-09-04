@@ -1,6 +1,8 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
+extern bool hitHappened;
+
 CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint)
     : pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint)
 {
@@ -43,9 +45,11 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
         movement_->GetEngineRotationSpeed(),
         movement_->GetEngineMaxRotationSpeed(),
         last_controls_.handbrake,
+        hitHappened,
         *pawn_kinematics_,
         msr::airlib::ClockFactory::get()->nowNanos()
     );
+    hitHappened = false;
     return state;
 }
 
