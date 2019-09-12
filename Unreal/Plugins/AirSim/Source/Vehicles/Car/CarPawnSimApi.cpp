@@ -115,7 +115,7 @@ void CarPawnSimApi::updateCarControls()
 				// Damper strength ranges from 0 to 1
 				// HitEffect strength ranges from -1 to 1
 
-				float rumble_strength = 1.0 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
+				float rumble_strength = 0.5 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
 					/ carpawn->GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
 
 				double speedcms = carpawn->GetVehicleMovement()->GetForwardSpeed();// cm/s
@@ -125,8 +125,8 @@ void CarPawnSimApi::updateCarControls()
 
 				// Hit or autocenter, not both
 				if (hitUtilities_ == nullptr || !hitUtilities_->IsHitPhysicalEffectOn()) {
-					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.0;
-					float autocenter_strength = std::min(1.0, (std::abs(speedkmh) / 60.0)) * std::sqrt(std::abs(joystick_controls_.steering * 2.0)) * steeringSign * AUTOCENTERGAIN;
+					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.2;//compensate for biased steering
+					float autocenter_strength = std::min(1.0,(0.3 + std::abs(speedkmh) / 60.0)) * std::sqrt(std::abs(joystick_controls_.steering * 2.0)) * steeringSign * AUTOCENTERGAIN;
 
 					UAirBlueprintLib::LogMessageString("Hit:", "hit off", LogDebugLevel::Informational);
 					
