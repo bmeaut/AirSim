@@ -109,21 +109,27 @@ void CarPawnSimApi::updateCarControls()
 			if (carpawn != nullptr) {
 				std::unique_ptr<ACarPawn::HitUtilities>& hitUtilities_ = carpawn->GetHitUtilities();
 
-				float rumble_strength = 1.0 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
+				// Reminder: (from SimJoyStick.h)
+				// AutoCenter strength ranges from -1 to 1
+				// WheelRumble strength ranges from 0 to 1
+				// Damper strength ranges from 0 to 1
+				// HitEffect strength ranges from -1 to 1
+
+				float rumble_strength = 0.5 - (carpawn->GetVehicleMovement()->GetEngineRotationSpeed()
 					/ carpawn->GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
 
-				double speed = carpawn->GetVehicleMovement()->GetForwardSpeed();
+				double speedcms = carpawn->GetVehicleMovement()->GetForwardSpeed();// cm/s
+				double speedkmh = speedcms * 0.036;// km/h
 
-				float damper_strength = (-std::sqrt(std::abs(speed) * (8.0 * std::pow(DAMPERGAIN, 2))) / 15 + DAMPERGAIN);
+				float damper_strength = DAMPERGAIN * std::min(1.0, (std::abs(speedkmh) / 60.0)); 
 
 				// Hit or autocenter, not both
 				if (hitUtilities_ == nullptr || !hitUtilities_->IsHitPhysicalEffectOn()) {
-					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.0;
-					float autocenter_strength = (1.0 - 1.0 / (std::abs(speed / 110) + 1.0))
-						* std::sqrt(std::abs(joystick_controls_.steering / 2.0)) * steeringSign * AUTOCENTERGAIN;
+					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.2;//compensate for biased steering
+					float autocenter_strength = std::min(1.0,(0.3 + std::abs(speedkmh) / 60.0)) * std::sqrt(std::abs(joystick_controls_.steering * 2.0)) * steeringSign * AUTOCENTERGAIN;
 
 					UAirBlueprintLib::LogMessageString("Hit:", "hit off", LogDebugLevel::Informational);
-
+					
 					// 0 if no collide 
 					if (hitUtilities_ != nullptr && !hitUtilities_->IsHitvirtualEffectOn()) {
 						// must be released, not active
@@ -137,7 +143,7 @@ void CarPawnSimApi::updateCarControls()
 
 					if (hitUtilities_->freshHit) {
 						hitUtilities_->freshHit = false;
-						hitUtilities_->hitSpeed = speed;
+						hitUtilities_->hitSpeed = speedcms;
 					}
 
 					float hit_strength = hitUtilities_->GetDirectionSign() * hitUtilities_->hitStrength
