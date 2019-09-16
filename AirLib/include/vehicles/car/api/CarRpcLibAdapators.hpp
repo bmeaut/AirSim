@@ -71,16 +71,16 @@ public:
             maxrpm = s.maxrpm;
             handbrake = s.handbrake;
             isHit = s.isHit;
-	    hitImpulseX = s.hitImpulse.X;
-	    hitImpulseY = s.hitImpulse.Y;
-	    hitImpulseZ = s.hitImpulse.Z;
+	    hitImpulseX = s.hitImpulseX;
+	    hitImpulseY = s.hitImpulseY;
+	    hitImpulseZ = s.hitImpulseZ;
             timestamp = s.timestamp;
             kinematics_estimated = s.kinematics_estimated;
         }
         msr::airlib::CarApiBase::CarState to() const
         {
             return msr::airlib::CarApiBase::CarState(
-                speed, gear, rpm, maxrpm, handbrake, isHit, { hitImpulseX, hitImpulseY, hitImpulseZ }, kinematics_estimated.to(), timestamp);
+                speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, kinematics_estimated.to(), timestamp);
         }
     };
 };
