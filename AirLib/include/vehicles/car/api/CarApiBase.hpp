@@ -53,12 +53,13 @@ public:
         float maxrpm;
         bool handbrake;
         bool isHit;
+	FVector hitImpulse;
         Kinematics::State kinematics_estimated;
         uint64_t timestamp;
 
-        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, bool hit_val,
+        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, bool hit_val, FVector impulse_val,
             const Kinematics::State& kinematics_estimated_val, uint64_t timestamp_val)
-            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), isHit(hit_val),
+            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), isHit(hit_val), hitImpulse(impulse_val),
               kinematics_estimated(kinematics_estimated_val), timestamp(timestamp_val)
         {
         }

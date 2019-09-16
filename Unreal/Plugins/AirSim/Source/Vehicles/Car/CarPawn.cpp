@@ -14,6 +14,7 @@
 #include "common/ClockFactory.hpp"
 
 bool hitHappened = false;
+FVector hitImpulse;
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -163,6 +164,8 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
     pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
     hitHappened = true;
+    auto kg = MyComp->CalculateMass();
+    hitImpulse.X = GetVehicleMovement()->GetForwardSpeed() * kg;
 		
 	if (hitUtilities_ == nullptr) {
 		hitUtilities_ = std::make_unique<HitUtilities>();
