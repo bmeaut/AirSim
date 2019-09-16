@@ -343,6 +343,14 @@ void PawnSimApi::reset()
     rc_data_ = msr::airlib::RCData();
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
+	//invoke reset event in generic relay blueprint
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->ResetEvent();
+		}
+	});
+
     environment_->reset();
 }
 

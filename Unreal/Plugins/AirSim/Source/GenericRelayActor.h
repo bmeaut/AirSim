@@ -28,4 +28,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchAutoPilotMod(bool enabled);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResetEvent();
+
 };
