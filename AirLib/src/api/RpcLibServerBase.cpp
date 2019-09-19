@@ -89,7 +89,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simSwitchAutoPilotMod", [&](bool is_autopilot_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchAutoPilotMod(is_autopilot_on);
 	});
-
+	pimpl_->server.bind("simSwitchFogMod", [&](bool is_fogmod_on, const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSwitchFogMod(is_fogmod_on);
+	});
     pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) -> 
         vector<RpcLibAdapatorsBase::ImageResponse> {
             const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
