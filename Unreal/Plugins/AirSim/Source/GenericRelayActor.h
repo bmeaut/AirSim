@@ -32,4 +32,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ResetEvent();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchFogMod(bool enabled);
+
 };

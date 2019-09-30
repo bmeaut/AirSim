@@ -27,7 +27,7 @@ public:
 
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
-
+	
 };
 
 
