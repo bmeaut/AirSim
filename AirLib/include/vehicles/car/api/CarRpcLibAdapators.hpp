@@ -54,11 +54,12 @@ public:
         float maxrpm;
         bool handbrake;
         bool isHit;
-	float hitImpulseX, hitImpulseY, hitImpulseZ;
+		float hitImpulseX, hitImpulseY, hitImpulseZ;
+		int fogState;
         KinematicsState kinematics_estimated;
         uint64_t timestamp;
 
-        MSGPACK_DEFINE_MAP(speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, kinematics_estimated, timestamp);
+        MSGPACK_DEFINE_MAP(speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, fogState, kinematics_estimated, timestamp);
 
         CarState()
         {}
@@ -71,16 +72,17 @@ public:
             maxrpm = s.maxrpm;
             handbrake = s.handbrake;
             isHit = s.isHit;
-	    hitImpulseX = s.hitImpulseX;
-	    hitImpulseY = s.hitImpulseY;
-	    hitImpulseZ = s.hitImpulseZ;
+			hitImpulseX = s.hitImpulseX;
+			hitImpulseY = s.hitImpulseY;
+			hitImpulseZ = s.hitImpulseZ;
+			fogState = s.fogState;
             timestamp = s.timestamp;
             kinematics_estimated = s.kinematics_estimated;
         }
         msr::airlib::CarApiBase::CarState to() const
         {
             return msr::airlib::CarApiBase::CarState(
-                speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, kinematics_estimated.to(), timestamp);
+                speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, fogState, kinematics_estimated.to(), timestamp);
         }
     };
 };

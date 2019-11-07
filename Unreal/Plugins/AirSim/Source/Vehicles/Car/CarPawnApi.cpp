@@ -47,7 +47,8 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
         movement_->GetEngineMaxRotationSpeed(),
         last_controls_.handbrake,
         hitHappened,
-	hitImpulse.X, hitImpulse.Y, hitImpulse.Z,
+		hitImpulse.X, hitImpulse.Y, hitImpulse.Z,
+        pawn_->fogState,
         *pawn_kinematics_,
         msr::airlib::ClockFactory::get()->nowNanos()
     );

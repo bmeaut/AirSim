@@ -85,6 +85,8 @@ ACarPawn::ACarPawn()
     last_gear_display_color_ = FColor(255, 255, 255, 255);
 
     is_low_friction_ = false;
+
+	fogState = 0;
 }
 
 void ACarPawn::setupVehicleMovementComponent()

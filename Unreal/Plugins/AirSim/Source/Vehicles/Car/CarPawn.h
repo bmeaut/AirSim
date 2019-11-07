@@ -71,6 +71,8 @@ public:
 
 	std::unique_ptr<HitUtilities>& GetHitUtilities();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) int32 fogState;
+
 private:
     void updateHUDStrings();
     void setupVehicleMovementComponent();
