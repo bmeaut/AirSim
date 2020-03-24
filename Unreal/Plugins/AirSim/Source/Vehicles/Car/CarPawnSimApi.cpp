@@ -79,6 +79,13 @@ void CarPawnSimApi::updateRendering(float dt)
     }
 }
 
+void CarPawnSimApi::simSwitchReverseGear(bool forward)
+{
+	joystick_controls_.manual_gear = forward ? 0 : -1;
+	joystick_controls_.is_manual_gear = !forward;
+	joystick_controls_.gear_immediate = true;
+}
+
 #define AUTOCENTERGAIN 0.55
 #define DAMPERGAIN 0.4
 
@@ -165,7 +172,7 @@ void CarPawnSimApi::updateCarControls()
 		auto timeNow = scalableClock.nowNanos();
 		if (msr::airlib::ClockBase::elapsedBetween(timeNow, prevTime) * 1.0E3 > 256)
 		{
-			if ((rc_data.getSwitch(12))) { //RSB button or B button
+			/*if ((rc_data.getSwitch(12))) { //RSB button or B button
 				joystick_controls_.manual_gear = current_controls_.manual_gear < 0 ? 0 : -1;
 				joystick_controls_.is_manual_gear = !current_controls_.is_manual_gear;
 				joystick_controls_.gear_immediate = true;
@@ -174,7 +181,7 @@ void CarPawnSimApi::updateCarControls()
 				joystick_controls_.manual_gear = 0;
 				joystick_controls_.is_manual_gear = false;
 				joystick_controls_.gear_immediate = true;
-			}
+			}*/
 			prevTime = timeNow;
 		}
 

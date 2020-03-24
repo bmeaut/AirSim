@@ -387,6 +387,10 @@ void PawnSimApi::simSwitchFogMod(bool is_fogmod_on) {
 	});
 }
 
+void PawnSimApi::simSwitchReverseGear(bool forward) {
+	return;
+}
+
 void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
 	AsyncTask(ENamedThreads::GameThread, [&]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
