@@ -414,6 +414,42 @@ void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSecond
 	});
 }
 
+void PawnSimApi::simSetTrafficLightRed() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTrafficLightRed();
+		}
+		});
+}
+
+void PawnSimApi::simSetTrafficLightRedYellow() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTrafficLightRedYellow();
+		}
+		});
+}
+
+void PawnSimApi::simSetTrafficLightYellow() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTrafficLightYellow();
+		}
+		});
+}
+
+void PawnSimApi::simSetTrafficLightGreen() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTrafficLightGreen();
+		}
+		});
+}
+
 void PawnSimApi::update()
 {
     //update position from kinematics so we have latest position after physics update

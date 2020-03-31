@@ -101,6 +101,18 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simForwardGear", [&](const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchReverseGear(true);
 	});
+	pimpl_->server.bind("simSetTrafficLightRed", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetTrafficLightRed();
+		});
+	pimpl_->server.bind("simSetTrafficLightRedYellow", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetTrafficLightRedYellow();
+		});
+	pimpl_->server.bind("simSetTrafficLightYellow", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetTrafficLightYellow();
+		});
+	pimpl_->server.bind("simSetTrafficLightGreen", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetTrafficLightGreen();
+		});
     pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) -> 
         vector<RpcLibAdapatorsBase::ImageResponse> {
             const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));

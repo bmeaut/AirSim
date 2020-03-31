@@ -41,4 +41,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetTargetSpeed(float targetSpeed, float deltaSeconds);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTrafficLightRed();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTrafficLightRedYellow();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTrafficLightYellow();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTrafficLightGreen();
 };
