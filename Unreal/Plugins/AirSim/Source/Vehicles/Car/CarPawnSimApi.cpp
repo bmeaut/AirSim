@@ -81,6 +81,7 @@ void CarPawnSimApi::updateRendering(float dt)
 
 void CarPawnSimApi::simSwitchReverseGear(bool forward)
 {
+	PawnSimApi::simSwitchReverseGear(forward);
 	joystick_controls_.manual_gear = forward ? 0 : -1;
 	joystick_controls_.is_manual_gear = !forward;
 	joystick_controls_.gear_immediate = true;
