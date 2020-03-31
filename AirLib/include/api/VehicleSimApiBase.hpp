@@ -71,6 +71,9 @@ public:
 	virtual void simSwitchFogMod(bool is_fogmod_on) = 0;
 	virtual void simSwitchReverseGear(bool forward) = 0;
 	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) = 0;
+	virtual void simSetAutoPilotTargetSpeed_0f5_4() = 0;
+	virtual void simSetAutoPilotTargetSpeed_0_4() = 0;
+	virtual void simSetAutoPilotTargetSpeed_1_4() = 0;
 	virtual void simSetTrafficLightRed() = 0;
 	virtual void simSetTrafficLightRedYellow() = 0;
 	virtual void simSetTrafficLightYellow() = 0;

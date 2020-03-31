@@ -92,6 +92,15 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simSetAutoPilotTargetSpeed", [&](float targetSpeed, float deltaSeconds, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed(targetSpeed, deltaSeconds);
 	});
+	pimpl_->server.bind("simSetAutoPilotTargetSpeed_0_4", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed_0_4();
+	});
+	pimpl_->server.bind("simSetAutoPilotTargetSpeed_0f5_4", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed_0f5_4();
+	});
+	pimpl_->server.bind("simSetAutoPilotTargetSpeed_1_4", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed_1_4();
+	});
 	pimpl_->server.bind("simSwitchFogMod", [&](bool is_fogmod_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchFogMod(is_fogmod_on);
 	});

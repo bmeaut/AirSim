@@ -414,6 +414,33 @@ void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSecond
 	});
 }
 
+void PawnSimApi::simSetAutoPilotTargetSpeed_0_4() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTargetSpeed(0, 4);
+		}
+	});
+}
+
+void PawnSimApi::simSetAutoPilotTargetSpeed_0f5_4() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTargetSpeed(0.5, 4);
+		}
+	});
+}
+
+void PawnSimApi::simSetAutoPilotTargetSpeed_1_4() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTargetSpeed(1, 4);
+		}
+	});
+}
+
 void PawnSimApi::simSetTrafficLightRed() {
 	AsyncTask(ENamedThreads::GameThread, [&]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
