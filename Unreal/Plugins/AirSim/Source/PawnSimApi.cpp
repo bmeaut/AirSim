@@ -388,7 +388,12 @@ void PawnSimApi::simSwitchFogMod(bool is_fogmod_on) {
 }
 
 void PawnSimApi::simSwitchReverseGear(bool forward) {
-	return;
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetDirection(forward);
+		}
+	});
 }
 
 void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
@@ -396,6 +401,15 @@ void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SwitchAutoPilotMod(is_autopilot_on);
+		}
+	});
+}
+
+void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetTargetSpeed(targetSpeed, deltaSeconds);
 		}
 	});
 }

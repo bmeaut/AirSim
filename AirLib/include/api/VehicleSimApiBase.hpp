@@ -70,6 +70,7 @@ public:
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) = 0;
 	virtual void simSwitchFogMod(bool is_fogmod_on) = 0;
 	virtual void simSwitchReverseGear(bool forward) = 0;
+	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) = 0;
     //use pointer here because of derived classes for VehicleSetting
     const AirSimSettings::VehicleSetting* getVehicleSetting() const
     {

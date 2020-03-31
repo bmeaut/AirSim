@@ -35,4 +35,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchFogMod(bool enabled);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetDirection(bool forward);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTargetSpeed(float targetSpeed, float deltaSeconds);
+
 };

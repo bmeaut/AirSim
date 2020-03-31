@@ -63,6 +63,7 @@ public: //implementation of VehicleSimApiBase
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) override;
 	virtual void simSwitchFogMod(bool is_fogmod_on) override;
 	virtual void simSwitchReverseGear(bool forward) override;
+	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) override;
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
     const msr::airlib::Kinematics::State* getPawnKinematics() const;

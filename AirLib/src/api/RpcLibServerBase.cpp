@@ -89,6 +89,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simSwitchAutoPilotMod", [&](bool is_autopilot_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchAutoPilotMod(is_autopilot_on);
 	});
+	pimpl_->server.bind("simSetAutoPilotTargetSpeed", [&](float targetSpeed, float deltaSeconds, const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed(targetSpeed, deltaSeconds);
+	});
 	pimpl_->server.bind("simSwitchFogMod", [&](bool is_fogmod_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchFogMod(is_fogmod_on);
 	});
