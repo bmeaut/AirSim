@@ -79,11 +79,19 @@ void CarPawnSimApi::updateRendering(float dt)
     }
 }
 
-void CarPawnSimApi::simSwitchReverseGear(bool forward)
+void CarPawnSimApi::simReverseGear()
 {
-	PawnSimApi::simSwitchReverseGear(forward);
-	joystick_controls_.manual_gear = forward ? 0 : -1;
-	joystick_controls_.is_manual_gear = !forward;
+	PawnSimApi::simReverseGear();
+	joystick_controls_.manual_gear = -1;
+	joystick_controls_.is_manual_gear = true;
+	joystick_controls_.gear_immediate = true;
+}
+
+void CarPawnSimApi::simForwardGear()
+{
+	PawnSimApi::simForwardGear();
+	joystick_controls_.manual_gear = 0;
+	joystick_controls_.is_manual_gear = false;
 	joystick_controls_.gear_immediate = true;
 }
 

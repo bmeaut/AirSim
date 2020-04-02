@@ -69,7 +69,8 @@ public:
 	virtual void simSwitchDayLightState(bool is_daylight_on) = 0;
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) = 0;
 	virtual void simSwitchFogMod(bool is_fogmod_on) = 0;
-	virtual void simSwitchReverseGear(bool forward) = 0;
+	virtual void simReverseGear() = 0;
+	virtual void simForwardGear() = 0;
 	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) = 0;
 	virtual void simSetAutoPilotTargetSpeed_0f5_4() = 0;
 	virtual void simSetAutoPilotTargetSpeed_0_4() = 0;

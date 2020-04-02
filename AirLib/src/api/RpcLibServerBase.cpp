@@ -105,10 +105,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 		getVehicleSimApi(vehicle_name)->simSwitchFogMod(is_fogmod_on);
 	});
 	pimpl_->server.bind("simReverseGear", [&](const std::string& vehicle_name)-> void {
-		getVehicleSimApi(vehicle_name)->simSwitchReverseGear(false);
+		getVehicleSimApi(vehicle_name)->simReverseGear();
 	});
 	pimpl_->server.bind("simForwardGear", [&](const std::string& vehicle_name)-> void {
-		getVehicleSimApi(vehicle_name)->simSwitchReverseGear(true);
+		getVehicleSimApi(vehicle_name)->simForwardGear();
 	});
 	pimpl_->server.bind("simSetTrafficLightRed", [&](const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSetTrafficLightRed();

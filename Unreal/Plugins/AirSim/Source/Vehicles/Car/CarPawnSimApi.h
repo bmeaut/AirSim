@@ -39,7 +39,8 @@ public:
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
-	virtual void simSwitchReverseGear(bool forward) override;
+	virtual void simReverseGear() override;
+	virtual void simForwardGear() override;
 
     msr::airlib::CarApiBase* getVehicleApi()
     {

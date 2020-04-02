@@ -387,11 +387,20 @@ void PawnSimApi::simSwitchFogMod(bool is_fogmod_on) {
 	});
 }
 
-void PawnSimApi::simSwitchReverseGear(bool forward) {
+void PawnSimApi::simReverseGear() {
 	AsyncTask(ENamedThreads::GameThread, [&]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
-			ActorItr->SetDirection(forward);
+			ActorItr->SetDirection(false);
+		}
+	});
+}
+
+void PawnSimApi::simForwardGear() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetDirection(true);
 		}
 	});
 }

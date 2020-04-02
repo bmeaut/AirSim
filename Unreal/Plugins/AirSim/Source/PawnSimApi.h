@@ -62,7 +62,8 @@ public: //implementation of VehicleSimApiBase
 	virtual void simSwitchDayLightState(bool is_daylight_on) override;
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) override;
 	virtual void simSwitchFogMod(bool is_fogmod_on) override;
-	virtual void simSwitchReverseGear(bool forward) override;
+	virtual void simReverseGear() override;
+	virtual void simForwardGear() override;
 	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) override;
 	virtual void simSetAutoPilotTargetSpeed_0_4() override;
 	virtual void simSetAutoPilotTargetSpeed_0f5_4() override;
