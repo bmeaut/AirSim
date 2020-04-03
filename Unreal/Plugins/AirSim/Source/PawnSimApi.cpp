@@ -410,6 +410,7 @@ void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SwitchAutoPilotMod(is_autopilot_on);
+			ActorItr->SetTargetSpeed(0.0f, 0.0f);
 		}
 	});
 }
