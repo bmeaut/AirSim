@@ -50,6 +50,7 @@ public:
 private:
     void createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
     void updateCarControls();
+	void loadWheelConfiguration();
 
 private:
 	msr::airlib::ScalableClock scalableClock;
@@ -63,4 +64,10 @@ private:
 
     CarPawnApi::CarControls joystick_controls_;
     CarPawnApi::CarControls current_controls_;
+
+	//wheel configuration
+	double autocenter_gain = 0.55;
+	double damper_gain = 0.4;
+	double max_speed_clamp = 60.0;
+	double added_hit_speed = 80.0;
 };

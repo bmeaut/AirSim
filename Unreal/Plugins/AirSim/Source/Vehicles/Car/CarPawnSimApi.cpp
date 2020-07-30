@@ -4,6 +4,9 @@
 #include "CarPawnApi.h"
 #include <exception>
 
+#include <iostream>
+#include <fstream>
+
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
@@ -13,6 +16,10 @@ CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transfor
     : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template, home_geopoint),
       keyboard_controls_(keyboard_controls)
 {
+
+	//read wheel configuration
+	loadWheelConfiguration();
+
     createVehicleApi(pawn, home_geopoint);
 
     //TODO: should do reset() here?
@@ -95,9 +102,6 @@ void CarPawnSimApi::simForwardGear()
 	joystick_controls_.gear_immediate = true;
 }
 
-#define AUTOCENTERGAIN 0.55
-#define DAMPERGAIN 0.4
-
 void CarPawnSimApi::updateCarControls()
 {
     auto rc_data = getRCData();
@@ -137,12 +141,12 @@ void CarPawnSimApi::updateCarControls()
 				double speedcms = carpawn->GetVehicleMovement()->GetForwardSpeed();// cm/s
 				double speedkmh = speedcms * 0.036;// km/h
 
-				float damper_strength = DAMPERGAIN * std::min(1.0, (std::abs(speedkmh) / 60.0)); 
+				float damper_strength = damper_gain * std::min(1.0, (std::abs(speedkmh) / max_speed_clamp)); 
 
 				// Hit or autocenter, not both
 				if (hitUtilities_ == nullptr || !hitUtilities_->IsHitPhysicalEffectOn()) {
 					float steeringSign = joystick_controls_.steering >= 0 ? 1.0 : -1.2;//compensate for biased steering
-					float autocenter_strength = std::min(1.0,(0.3 + std::abs(speedkmh) / 60.0)) * std::sqrt(std::abs(joystick_controls_.steering * 2.0)) * steeringSign * AUTOCENTERGAIN;
+					float autocenter_strength = std::min(1.0,(0.3 + std::abs(speedkmh) / max_speed_clamp)) * std::sqrt(std::abs(joystick_controls_.steering * 2.0)) * steeringSign * autocenter_gain;
 
 					UAirBlueprintLib::LogMessageString("Hit:", "hit off", LogDebugLevel::Informational);
 					
@@ -163,7 +167,7 @@ void CarPawnSimApi::updateCarControls()
 					}
 
 					float hit_strength = hitUtilities_->GetDirectionSign() * hitUtilities_->hitStrength
-						* ((std::abs(hitUtilities_->hitSpeed) + 80) / 60);
+						* ((std::abs(hitUtilities_->hitSpeed) + added_hit_speed) / max_speed_clamp);
 
 					setRCForceFeedback(rumble_strength, 0, damper_strength, hit_strength, false);
 				}
@@ -220,6 +224,8 @@ void CarPawnSimApi::updateCarControls()
 //*** Start: UpdatableState implementation ***//
 void CarPawnSimApi::reset()
 {
+	loadWheelConfiguration();
+
     PawnSimApi::reset();
 
     vehicle_api_->reset();
@@ -241,3 +247,13 @@ void CarPawnSimApi::reportState(StateReporter& reporter)
 }
 //*** End: UpdatableState implementation ***//
 
+void CarPawnSimApi::loadWheelConfiguration()
+{
+	std::fstream myfile("%USERPROFILE%\\Documents\\AirSim\\wheel_configuration.txt", std::ios_base::in);
+	std::string comments;
+	myfile >>
+		comments >> autocenter_gain >>
+		comments >> damper_gain >>
+		comments >> max_speed_clamp >>
+		comments >> added_hit_speed;
+}
