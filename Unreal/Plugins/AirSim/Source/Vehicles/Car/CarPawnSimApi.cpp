@@ -17,9 +17,6 @@ CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transfor
       keyboard_controls_(keyboard_controls)
 {
 
-	//read wheel configuration
-	loadWheelConfiguration();
-
     createVehicleApi(pawn, home_geopoint);
 
     //TODO: should do reset() here?
@@ -249,11 +246,16 @@ void CarPawnSimApi::reportState(StateReporter& reporter)
 
 void CarPawnSimApi::loadWheelConfiguration()
 {
-	std::fstream myfile("%USERPROFILE%\\Documents\\AirSim\\wheel_configuration.txt", std::ios_base::in);
+	std::string user_path = std::string(std::getenv("USERPROFILE"));
+	std::fstream myfile(user_path + "\\Documents\\AirSim\\wheel_configuration.txt", std::ios_base::in);
 	std::string comments;
-	myfile >>
-		comments >> autocenter_gain >>
-		comments >> damper_gain >>
-		comments >> max_speed_clamp >>
-		comments >> added_hit_speed;
+	if (myfile.is_open())
+	{
+		myfile >>
+			comments >> autocenter_gain >>
+			comments >> damper_gain >>
+			comments >> max_speed_clamp >>
+			comments >> added_hit_speed;
+		myfile.close();
+	}
 }
