@@ -3,6 +3,7 @@
 
 extern bool hitHappened;
 extern FVector hitImpulse;
+extern float wheelSteering;
 
 CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint)
     : pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint)
@@ -48,6 +49,7 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
         last_controls_.handbrake,
         hitHappened,
 		hitImpulse.X, hitImpulse.Y, hitImpulse.Z,
+        wheelSteering,
         pawn_->fogState,
         *pawn_kinematics_,
         msr::airlib::ClockFactory::get()->nowNanos()

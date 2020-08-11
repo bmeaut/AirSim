@@ -7,6 +7,8 @@
 #include <iostream>
 #include <fstream>
 
+float wheelSteering = 0.0;
+
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
@@ -121,6 +123,9 @@ void CarPawnSimApi::updateCarControls()
             joystick_controls_.steering = rc_data.yaw * 1.25;
             joystick_controls_.throttle = (-rc_data.right_z + 1) / 2;
             joystick_controls_.brake = rc_data.throttle;
+
+            // Elkuldjuk okosszelvedobe
+            wheelSteering = joystick_controls_.steering;
 
 			auto carpawn = dynamic_cast<ACarPawn*>(getPawn());
 			if (carpawn != nullptr) {
