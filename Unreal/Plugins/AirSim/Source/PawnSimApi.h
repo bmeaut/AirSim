@@ -59,6 +59,7 @@ public: //implementation of VehicleSimApiBase
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void enableBackMirror(bool is_enabled) override;
+    virtual void enableTopCamera(bool is_enabled) override;
 	virtual void simSwitchDayLightState(bool is_daylight_on) override;
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) override;
 	virtual void simSwitchFogMod(bool is_fogmod_on) override;
@@ -141,6 +142,7 @@ private: //vars
     mutable SimJoyStick::State joystick_state_;
 
     bool back_mirror_enabled = false;
+    bool top_camera_enabled = false;
 	
     struct State {
         FVector start_location;
@@ -170,6 +172,6 @@ private: //vars
     msr::airlib::Kinematics::State kinematics_;
     std::unique_ptr<msr::airlib::Environment> environment_;
 
-    msr::airlib::ImageCaptureBase::ImageRequest sceneRequest, seqRequest, depthRequest, backRequest;
+    msr::airlib::ImageCaptureBase::ImageRequest sceneRequest, seqRequest, depthRequest, backRequest, topRequest;
     std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
 };

@@ -83,6 +83,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simEnableBackMirror", [&](bool is_enabled, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->enableBackMirror(is_enabled);
 	});
+	pimpl_->server.bind("simEnableTopCamera", [&](bool is_enabled, const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->enableTopCamera(is_enabled);
+	});
 	pimpl_->server.bind("simSwitchDayLightState", [&](bool is_daylight_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchDayLightState(is_daylight_on);
 	});

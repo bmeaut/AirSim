@@ -24,6 +24,7 @@ struct Images {
 	uint8 sceneData[147456];
 	uint8 segmentationData[147456];
 	uint8 backMirrorSceneData[147456];
+	uint8 topCameraData[147456];
     float depthData[36864];
 };
 
@@ -86,9 +87,16 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
 	backRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
 	backRequest.pixels_as_float = false;
 
+	topRequest.camera_name = "top";
+	topRequest.compress = false;
+	topRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+	topRequest.pixels_as_float = false;
+
     requests.push_back(sceneRequest);
     requests.push_back(seqRequest);
     requests.push_back(depthRequest);
+	requests.push_back(backRequest);
+	requests.push_back(topRequest);
 	
     HANDLE handle;
 	handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
@@ -229,10 +237,25 @@ std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
 {
     std::vector<ImageCaptureBase::ImageResponse> responses;
 
-    const ImageCaptureBase* camera = getImageCapture();
-    camera->getImages(requests, responses);
+	std::vector<ImageCaptureBase::ImageRequest> rrr;
+	for (int i = 0; i < requests.size(); ++i) {
+		if (i == 3 && !back_mirror_enabled) continue;
+		if (i == 4 && !top_camera_enabled) continue;
+		rrr.push_back(requests[i]);
+	}
 
-    return responses;
+    const ImageCaptureBase* camera = getImageCapture();
+    camera->getImages(rrr, responses);
+
+	std::vector<ImageCaptureBase::ImageResponse> ret;
+	for (int i = 0, j = 0; i < requests.size(); ++i) {
+		if (i == 3 && !back_mirror_enabled) ret.push_back(ImageCaptureBase::ImageResponse{});
+		else if (i == 4 && !top_camera_enabled) ret.push_back(ImageCaptureBase::ImageResponse{});
+		else {
+			ret.push_back(std::move(responses[j++]));
+		}
+	}
+    return ret;
 }
 
 std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
@@ -355,18 +378,11 @@ void PawnSimApi::reset()
 }
 
 void PawnSimApi::enableBackMirror(bool is_enabled) {
-    if (is_enabled) {
-		if (!back_mirror_enabled) {
-			requests.push_back(backRequest);
-			back_mirror_enabled = true;
-		}
-    }
-    else {
-		if (back_mirror_enabled) {
-			requests.pop_back();
-			back_mirror_enabled = false;
-		}
-    }
+	back_mirror_enabled = is_enabled;
+}
+
+void PawnSimApi::enableTopCamera(bool is_enabled) {
+	top_camera_enabled = is_enabled;
 }
 
 void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
@@ -498,8 +514,10 @@ void PawnSimApi::update()
     const auto responses = getImages(req);
     std::copy(responses.at(0).image_data_uint8.begin(), responses.at(0).image_data_uint8.end(), dataPointer->sceneData);
     std::copy(responses.at(1).image_data_uint8.begin(), responses.at(1).image_data_uint8.end(), dataPointer->segmentationData);
-	if(responses.size() == 4)
+	if(back_mirror_enabled)
 	    std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->backMirrorSceneData);
+	if (top_camera_enabled)
+		std::copy(responses.at(4).image_data_uint8.begin(), responses.at(4).image_data_uint8.end(), dataPointer->topCameraData);
     std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
 	dataPointer->imageID++;
 }

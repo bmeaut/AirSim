@@ -56,6 +56,10 @@ ACarPawn::ACarPawn()
     camera_back_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_center_base_"));
     camera_back_center_base_->SetRelativeLocation(FVector(-200, 0, 100)); //rear
     camera_back_center_base_->SetupAttachment(GetMesh());
+	camera_top_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_top_center_base_"));
+    camera_top_center_base_->SetRelativeLocation(FVector(-420, 0, 260)); //top
+    camera_top_center_base_->SetRelativeRotation(FVector(0, -20, 0));
+    camera_top_center_base_->SetupAttachment(GetMesh());
 
     // In car HUD
     // Create text render component for in car speed display
@@ -225,6 +229,10 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
         FTransform(FRotator(0, -180, 0), FVector::ZeroVector), camera_spawn_params);
     camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
+	camera_spawn_params.Name = FName(*(this->GetName() + "_camera_top_center"));
+	camera_top_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+	camera_top_center_->AttachToComponent(camera_top_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
     setupInputBindings();
 }
 
@@ -236,12 +244,14 @@ common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() co
     cameras.insert_or_assign("front_left", camera_front_left_);
     cameras.insert_or_assign("fpv", camera_driver_);
     cameras.insert_or_assign("back_center", camera_back_center_);
+    cameras.insert_or_assign("top", camera_top_center_);
 
     cameras.insert_or_assign("0", camera_front_center_);
     cameras.insert_or_assign("1", camera_front_right_);
     cameras.insert_or_assign("2", camera_front_left_);
     cameras.insert_or_assign("3", camera_driver_);
     cameras.insert_or_assign("4", camera_back_center_);
+    cameras.insert_or_assign("5", camera_top_center_);
 
     cameras.insert_or_assign("", camera_front_center_);
 
@@ -255,12 +265,14 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     camera_front_right_ = nullptr;
     camera_driver_ = nullptr;
     camera_back_center_ = nullptr;
+    camera_top_center_ = nullptr;
 
     camera_front_center_base_ = nullptr;
     camera_front_left_base_ = nullptr;
     camera_front_right_base_ = nullptr;
     camera_driver_base_ = nullptr;
     camera_back_center_base_ = nullptr;
+    camera_top_center_base_ = nullptr;
 }
 
 void ACarPawn::Tick(float Delta)

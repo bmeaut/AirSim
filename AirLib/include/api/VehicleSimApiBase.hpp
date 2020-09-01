@@ -66,6 +66,7 @@ public:
     virtual std::string getRecordFileLine(bool is_header_line) const = 0;
     virtual void toggleTrace() = 0;
     virtual void enableBackMirror(bool is_enabled) = 0;
+    virtual void enableTopCamera(bool is_enabled) = 0;
 	virtual void simSwitchDayLightState(bool is_daylight_on) = 0;
 	virtual void simSwitchAutoPilotMod(bool is_autopilot_on) = 0;
 	virtual void simSwitchFogMod(bool is_fogmod_on) = 0;
