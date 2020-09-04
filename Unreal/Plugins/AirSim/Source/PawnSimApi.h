@@ -144,6 +144,9 @@ private: //vars
     bool back_mirror_enabled = false;
     bool top_camera_enabled = false;
 	
+	bool back_mirror_enabled_2 = false;
+    bool top_camera_enabled_2 = false;
+	
     struct State {
         FVector start_location;
         FRotator start_rotation;
