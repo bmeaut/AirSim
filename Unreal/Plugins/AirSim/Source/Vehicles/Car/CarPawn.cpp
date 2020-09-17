@@ -5,7 +5,7 @@
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "WheeledVehicleMovementComponent4W.h"
-
+#include "Camera/CameraComponent.h"
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
 #include "AirBlueprintLib.h"
@@ -57,7 +57,7 @@ ACarPawn::ACarPawn()
 	camera_back_center_base_->SetRelativeLocation(FVector(-200, 0, 100)); //rear
 	camera_back_center_base_->SetupAttachment(GetMesh());
 	camera_top_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_top_center_base_"));
-	camera_top_center_base_->SetRelativeLocation(FVector(-420, 0, 260)); //top
+	camera_top_center_base_->SetRelativeLocation(FVector(-420, 0, 513)); //top
 	camera_top_center_base_->SetupAttachment(GetMesh());
 
 	// In car HUD
@@ -230,7 +230,8 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 	camera_spawn_params.Name = FName(*(this->GetName() + "_camera_top_center"));
 	camera_top_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
-		FTransform(FRotator(-20, 0, 0), FVector::ZeroVector), camera_spawn_params);
+		FTransform(FRotator(-40, 0, 0), FVector::ZeroVector), camera_spawn_params);
+	camera_top_center_->GetCameraComponent()->SetFieldOfView(60.0f);
 	camera_top_center_->AttachToComponent(camera_top_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
 	setupInputBindings();
