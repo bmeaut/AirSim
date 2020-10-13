@@ -89,7 +89,7 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
 
 	topRequest.camera_name = "top";
 	topRequest.compress = false;
-	topRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Scene;
+	topRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Infrared;
 	topRequest.pixels_as_float = false;
 
 	requests.push_back(sceneRequest);
