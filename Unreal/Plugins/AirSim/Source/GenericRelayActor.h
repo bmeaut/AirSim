@@ -40,6 +40,15 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetTargetSpeed(float targetSpeed, float deltaSeconds);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetMainCameraPosition(float x, float y, float z, float angle);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GoToChessboardMap();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GoToDefaultMap();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetTrafficLightRed();

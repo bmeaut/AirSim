@@ -466,6 +466,33 @@ void PawnSimApi::simSetAutoPilotTargetSpeed_1_4() {
 		});
 }
 
+void PawnSimApi::simSetMainCameraPosition(float x, float y, float z, float angle) {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->SetMainCameraPosition(x, y, z, angle);
+		}
+	});
+}
+
+void PawnSimApi::simGoToChessboardMap() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->GoToChessboardMap();
+		}
+	});
+}
+
+void PawnSimApi::simGoToDefaultMap() {
+	AsyncTask(ENamedThreads::GameThread, [&]() {
+		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
+		{
+			ActorItr->GoToDefaultMap();
+		}
+	});
+}
+
 void PawnSimApi::simSetTrafficLightRed() {
 	AsyncTask(ENamedThreads::GameThread, [&]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)

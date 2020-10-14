@@ -104,6 +104,24 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simSetAutoPilotTargetSpeed_1_4", [&](const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSetAutoPilotTargetSpeed_1_4();
 	});
+	pimpl_->server.bind("simSetMainCameraPosition_Left", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetMainCameraPosition(0, -80.0f, 0.f, 0.f);
+	});
+	pimpl_->server.bind("simSetMainCameraPosition_Right", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetMainCameraPosition(0, 80.0f, 0.f, 0.f);
+	});
+	pimpl_->server.bind("simSetMainCameraPosition_Center", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetMainCameraPosition(0.f, 0.f, 0.f, 0.f);
+	});
+	pimpl_->server.bind("simSetMainCameraPosition", [&](float x, float y, float z, float angle, const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simSetMainCameraPosition(x, y, z, angle);
+	});
+	pimpl_->server.bind("simGoToChessboardMap", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simGoToChessboardMap();
+	});
+	pimpl_->server.bind("simGoToDefaultMap", [&](const std::string& vehicle_name)-> void {
+		getVehicleSimApi(vehicle_name)->simGoToDefaultMap();
+	});
 	pimpl_->server.bind("simSwitchFogMod", [&](bool is_fogmod_on, const std::string& vehicle_name)-> void {
 		getVehicleSimApi(vehicle_name)->simSwitchFogMod(is_fogmod_on);
 	});

@@ -69,6 +69,9 @@ public: //implementation of VehicleSimApiBase
 	virtual void simSetAutoPilotTargetSpeed_0_4() override;
 	virtual void simSetAutoPilotTargetSpeed_0f5_4() override;
 	virtual void simSetAutoPilotTargetSpeed_1_4() override;
+	virtual void simSetMainCameraPosition(float x, float y, float z, float angle) override;
+	virtual void simGoToChessboardMap() override;
+	virtual void simGoToDefaultMap() override;
 	virtual void simSetTrafficLightRed() override;
 	virtual void simSetTrafficLightRedYellow() override;
 	virtual void simSetTrafficLightYellow() override;
