@@ -385,8 +385,8 @@ void PawnSimApi::enableTopCamera(bool is_enabled) {
 	top_camera_enabled = is_enabled;
 }
 
-void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
+void PawnSimApi::simSwitchDayLightState(bool is_daylight_on_t) {
+	AsyncTask(ENamedThreads::GameThread, [&, is_daylight_on = is_daylight_on_t]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SwitchDayLightState(is_daylight_on);
@@ -394,8 +394,8 @@ void PawnSimApi::simSwitchDayLightState(bool is_daylight_on) {
 		});
 }
 
-void PawnSimApi::simSwitchFogMod(bool is_fogmod_on) {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
+void PawnSimApi::simSwitchFogMod(bool is_fogmod_on_t) {
+	AsyncTask(ENamedThreads::GameThread, [&, is_fogmod_on = is_fogmod_on_t]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SwitchFogMod(is_fogmod_on);
@@ -421,8 +421,8 @@ void PawnSimApi::simForwardGear() {
 		});
 }
 
-void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
+void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on_t) {
+	AsyncTask(ENamedThreads::GameThread, [&, is_autopilot_on = is_autopilot_on_t]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SwitchAutoPilotMod(is_autopilot_on);
@@ -430,8 +430,8 @@ void PawnSimApi::simSwitchAutoPilotMod(bool is_autopilot_on) {
 		});
 }
 
-void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
+void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed_t, float deltaSeconds_t) {
+	AsyncTask(ENamedThreads::GameThread, [&, targetSpeed = targetSpeed_t, deltaSeconds = deltaSeconds_t]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SetTargetSpeed(targetSpeed, deltaSeconds);
@@ -466,8 +466,8 @@ void PawnSimApi::simSetAutoPilotTargetSpeed_1_4() {
 		});
 }
 
-void PawnSimApi::simSetMainCameraPosition(float x, float y, float z, float angle) {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
+void PawnSimApi::simSetMainCameraPosition(float xt, float yt, float zt, float anglet) {
+	AsyncTask(ENamedThreads::GameThread, [&, x = xt, y = yt, z = zt, angle = anglet]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
 		{
 			ActorItr->SetMainCameraPosition(x, y, z, angle);
