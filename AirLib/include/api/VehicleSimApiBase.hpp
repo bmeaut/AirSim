@@ -73,9 +73,6 @@ public:
 	virtual void simReverseGear() = 0;
 	virtual void simForwardGear() = 0;
 	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) = 0;
-	virtual void simSetAutoPilotTargetSpeed_0f5_4() = 0;
-	virtual void simSetAutoPilotTargetSpeed_0_4() = 0;
-	virtual void simSetAutoPilotTargetSpeed_1_4() = 0;
 	virtual void simSetMainCameraPosition(float x, float y, float z, float angle) = 0;
 	virtual void simGoToChessboardMap() = 0;
 	virtual void simGoToDefaultMap() = 0;

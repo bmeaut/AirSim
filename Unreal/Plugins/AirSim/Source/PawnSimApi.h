@@ -66,9 +66,6 @@ public: //implementation of VehicleSimApiBase
 	virtual void simReverseGear() override;
 	virtual void simForwardGear() override;
 	virtual void simSetAutoPilotTargetSpeed(float targetSpeed, float deltaSeconds) override;
-	virtual void simSetAutoPilotTargetSpeed_0_4() override;
-	virtual void simSetAutoPilotTargetSpeed_0f5_4() override;
-	virtual void simSetAutoPilotTargetSpeed_1_4() override;
 	virtual void simSetMainCameraPosition(float x, float y, float z, float angle) override;
 	virtual void simGoToChessboardMap() override;
 	virtual void simGoToDefaultMap() override;

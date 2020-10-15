@@ -439,33 +439,6 @@ void PawnSimApi::simSetAutoPilotTargetSpeed(float targetSpeed_t, float deltaSeco
 		});
 }
 
-void PawnSimApi::simSetAutoPilotTargetSpeed_0_4() {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
-		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
-		{
-			ActorItr->SetTargetSpeed(0, 4);
-		}
-		});
-}
-
-void PawnSimApi::simSetAutoPilotTargetSpeed_0f5_4() {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
-		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
-		{
-			ActorItr->SetTargetSpeed(0.5, 4);
-		}
-		});
-}
-
-void PawnSimApi::simSetAutoPilotTargetSpeed_1_4() {
-	AsyncTask(ENamedThreads::GameThread, [&]() {
-		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
-		{
-			ActorItr->SetTargetSpeed(1, 4);
-		}
-		});
-}
-
 void PawnSimApi::simSetMainCameraPosition(float xt, float yt, float zt, float anglet) {
 	AsyncTask(ENamedThreads::GameThread, [&, x = xt, y = yt, z = zt, angle = anglet]() {
 		for (TActorIterator<AGenericRelayActor> ActorItr(pawn_->GetWorld()); ActorItr; ++ActorItr)
