@@ -151,6 +151,8 @@ REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp *. /njh /njs /ndl /np
 
+robocopy EditedFiles Unreal\Plugins\AirSim\Content\VehicleAdv\SUV SuvCarPawn.uasset
+
 REM //---------- done building ----------
 exit /b 0
 
