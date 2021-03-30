@@ -175,6 +175,6 @@ private: //vars
     msr::airlib::Kinematics::State kinematics_;
     std::unique_ptr<msr::airlib::Environment> environment_;
 
-    msr::airlib::ImageCaptureBase::ImageRequest sceneRequest, seqRequest, depthRequest, backRequest, topRequest;
+    msr::airlib::ImageCaptureBase::ImageRequest sceneRequest, seqRequest, depthRequest, backRequest, topRequest, roadSideRequest;
     std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
 };
