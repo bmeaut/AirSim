@@ -21,11 +21,12 @@
 struct Images {
 	uint8 imageID;
 	uint8 _padding[3];
-	uint8 sceneData[147456];
-	uint8 segmentationData[147456];
-	uint8 backMirrorSceneData[147456];
-	uint8 topCameraData[147456];
-	float depthData[36864];
+	uint8 sceneData[147456];			
+	uint8 segmentationData[147456];		
+	uint8 backMirrorSceneData[147456];	
+	uint8 topCameraData[147456];		
+	uint8 roadSideData[147456];			
+	float depthData[36864];				
 };
 
 Images* dataPointer;
@@ -92,11 +93,17 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
 	topRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::Infrared;
 	topRequest.pixels_as_float = false;
 
+	roadSideRequest.camera_name = "0";
+	roadSideRequest.compress = false;
+	roadSideRequest.image_type = msr::airlib::ImageCaptureBase::ImageType::DepthPlanner;
+	roadSideRequest.pixels_as_float = false;
+
 	requests.push_back(sceneRequest);
 	requests.push_back(seqRequest);
 	requests.push_back(depthRequest);
 	requests.push_back(backRequest);
 	requests.push_back(topRequest);
+	requests.push_back(roadSideRequest);
 
 	HANDLE handle;
 	handle = CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(Images), L"DataSend");
@@ -521,6 +528,7 @@ void PawnSimApi::update()
 		std::copy(responses.at(3).image_data_uint8.begin(), responses.at(3).image_data_uint8.end(), dataPointer->backMirrorSceneData);
 	if (top_camera_enabled_2)
 		std::copy(responses.at(4).image_data_uint8.begin(), responses.at(4).image_data_uint8.end(), dataPointer->topCameraData);
+	std::copy(responses.at(5).image_data_uint8.begin(), responses.at(5).image_data_uint8.end(), dataPointer->roadSideData);
 	std::copy(responses.at(2).image_data_float.begin(), responses.at(2).image_data_float.end(), dataPointer->depthData);
 	dataPointer->imageID++;
 }
