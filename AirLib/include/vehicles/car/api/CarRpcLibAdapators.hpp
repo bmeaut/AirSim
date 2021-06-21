@@ -57,10 +57,11 @@ public:
 		float hitImpulseX, hitImpulseY, hitImpulseZ;
         float wheelSteering;
 		int fogState;
+		float autopilotTime;
         KinematicsState kinematics_estimated;
         uint64_t timestamp;
 
-        MSGPACK_DEFINE_MAP(speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, wheelSteering, fogState, kinematics_estimated, timestamp);
+        MSGPACK_DEFINE_MAP(speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, wheelSteering, fogState, autopilotTime, kinematics_estimated, timestamp);
 
         CarState()
         {}
@@ -78,13 +79,14 @@ public:
 			hitImpulseZ = s.hitImpulseZ;
             wheelSteering = s.wheelSteering;
 			fogState = s.fogState;
+			autopilotTime = s.autopilotTime;
             timestamp = s.timestamp;
             kinematics_estimated = s.kinematics_estimated;
         }
         msr::airlib::CarApiBase::CarState to() const
         {
             return msr::airlib::CarApiBase::CarState(
-                speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, wheelSteering, fogState, kinematics_estimated.to(), timestamp);
+                speed, gear, rpm, maxrpm, handbrake, isHit, hitImpulseX, hitImpulseY, hitImpulseZ, wheelSteering, fogState, autopilotTime, kinematics_estimated.to(), timestamp);
         }
     };
 };

@@ -90,6 +90,8 @@ ACarPawn::ACarPawn()
 	is_low_friction_ = false;
 
 	fogState = 0;
+	autopilotTime = 0.0f;
+	autopilotSpeed = 0.0f;
 }
 
 void ACarPawn::setupVehicleMovementComponent()

@@ -41,8 +41,14 @@ const msr::airlib::CarApiBase::CarControls& CarPawnApi::getCarControls() const
 
 msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 {
+	float speedValue = 0.0;
+	if (movement_->GetForwardSpeed() <= 0.0f)
+		speedValue = pawn_->autopilotSpeed * 11.1; // 1x playbackSpeed = 40 kmh = 11.1 m/s
+	else
+		speedValue = movement_->GetForwardSpeed() / 100.0f; // cm/s -> m/s
+
     CarApiBase::CarState state(
-        movement_->GetForwardSpeed() / 100, //cm/s -> m/s
+        speedValue,
         movement_->GetCurrentGear(),
         movement_->GetEngineRotationSpeed(),
         movement_->GetEngineMaxRotationSpeed(),
@@ -51,6 +57,7 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 		hitImpulse.X, hitImpulse.Y, hitImpulse.Z,
         wheelSteering,
         pawn_->fogState,
+		pawn_->autopilotTime,
         *pawn_kinematics_,
         msr::airlib::ClockFactory::get()->nowNanos()
     );

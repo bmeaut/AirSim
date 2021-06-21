@@ -56,12 +56,13 @@ public:
 		float hitImpulseX, hitImpulseY, hitImpulseZ;
         float wheelSteering;
 		int fogState;
+		float autopilotTime;
         Kinematics::State kinematics_estimated;
         uint64_t timestamp;
 
-        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, bool hit_val, float hitImpulseXval, float hitImpulseYval, float hitImpulseZval, float _wheelSteering, int fog_val,
+        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, bool hit_val, float hitImpulseXval, float hitImpulseYval, float hitImpulseZval, float _wheelSteering, int fog_val, float autopilotTime,
             const Kinematics::State& kinematics_estimated_val, uint64_t timestamp_val)
-            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), isHit(hit_val), hitImpulseX(hitImpulseXval), hitImpulseY(hitImpulseYval), hitImpulseZ(hitImpulseZval), wheelSteering(_wheelSteering), fogState(fog_val),
+            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), isHit(hit_val), hitImpulseX(hitImpulseXval), hitImpulseY(hitImpulseYval), hitImpulseZ(hitImpulseZval), wheelSteering(_wheelSteering), fogState(fog_val), autopilotTime(autopilotTime),
               kinematics_estimated(kinematics_estimated_val), timestamp(timestamp_val)
         {
         }

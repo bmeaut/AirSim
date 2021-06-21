@@ -72,6 +72,8 @@ public:
 	std::unique_ptr<HitUtilities>& GetHitUtilities();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) int32 fogState;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float autopilotTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) float autopilotSpeed;
 
 private:
     void updateHUDStrings();
